@@ -6,13 +6,14 @@ import (
 	"os"
 	"time"
 
+	"github.com/letenk/todo-list/models/domain"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 var counts int64
 
-func openConnetion() (*gorm.DB, error) {
+func openConnection() (*gorm.DB, error) {
 	DBUser := os.Getenv("MYSQL_USER")
 	DBPassword := os.Getenv("MYSQL_PASSWORD")
 	DBHost := os.Getenv("MYSQL_HOST")
@@ -42,16 +43,19 @@ func openConnetion() (*gorm.DB, error) {
 
 func SetupDB() *gorm.DB {
 	for {
-		conn, err := openConnetion()
+		conn, err := openConnection()
 		if err != nil {
-			// Print log
 			log.Println("MySQL not yet ready ...")
 			// Increments var counts
 			counts++
 		} else {
-			// Print log
+			// Auto Migrate
+			err = conn.AutoMigrate(&domain.ActivityGroup{})
+
+			if err != nil {
+				log.Fatalf("Failed to auto migration %v", err)
+			}
 			log.Println("Connected to MySQL!")
-			// return connection
 			return conn
 		}
 
@@ -64,7 +68,6 @@ func SetupDB() *gorm.DB {
 
 		// Print log for waiting two second each trying connection again
 		log.Println("Backing off for two seconds ...")
-		// Time sleep at 2 secondf
 		time.Sleep(2 * time.Second)
 		continue
 	}
