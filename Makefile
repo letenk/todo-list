@@ -11,4 +11,4 @@ test:
 ## test_cover: Run all test with coverage
 test_cover:
 	@echo "All test are running with coverage..."
-	go test ./... -v -coverpk
+	go test ./... -v -cover
