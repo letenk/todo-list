@@ -1,6 +1,7 @@
 package repository_test
 
 import (
+	"os"
 	"sync"
 	"testing"
 	"time"
@@ -19,6 +20,13 @@ var mutex sync.Mutex
 var conn *gorm.DB
 
 func TestMain(m *testing.M) {
+	// Set env
+	os.Setenv("MYSQL_USER", "root")
+	os.Setenv("MYSQL_PASSWORD", "root")
+	os.Setenv("MYSQL_HOST", "127.0.0.1")
+	os.Setenv("MYSQL_PORT", "3306")
+	os.Setenv("MYSQL_DBNAME", "todo4")
+
 	db := config.SetupDB()
 	conn = db
 	m.Run()
@@ -29,7 +37,7 @@ func dropTable() {
 	conn.Raw("delete from activity_groups")
 }
 
-func createRandomActivityGroup(t *testing.T) domain.ActivityGroup {
+func createRandomActivityGroupRepository(t *testing.T) domain.ActivityGroup {
 	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
 
 	activityGroup := domain.ActivityGroup{
@@ -55,7 +63,7 @@ func createRandomActivityGroup(t *testing.T) domain.ActivityGroup {
 func TestCreateActivityGroup(t *testing.T) {
 	defer dropTable()
 	t.Parallel()
-	createRandomActivityGroup(t)
+	createRandomActivityGroupRepository(t)
 }
 
 func TestFindAllActivityGroup(t *testing.T) {
@@ -64,7 +72,7 @@ func TestFindAllActivityGroup(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func() {
 			mutex.Lock()
-			createRandomActivityGroup(t)
+			createRandomActivityGroupRepository(t)
 			mutex.Unlock()
 		}()
 	}
@@ -89,7 +97,7 @@ func TestFindAllActivityGroup(t *testing.T) {
 func TestFindOneActivityGroup(t *testing.T) {
 	defer dropTable()
 	// Create random data
-	newActivityGroup := createRandomActivityGroup(t)
+	newActivityGroup := createRandomActivityGroupRepository(t)
 
 	t.Parallel()
 	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
@@ -108,7 +116,7 @@ func TestFindOneActivityGroup(t *testing.T) {
 
 func TestUpdateActivityGroup(t *testing.T) {
 	defer dropTable()
-	newActivityGroup := createRandomActivityGroup(t)
+	newActivityGroup := createRandomActivityGroupRepository(t)
 	t.Parallel()
 	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
 
@@ -134,7 +142,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 
 func TestDeleteActivityGroup(t *testing.T) {
 	dropTable()
-	newActivityGroup := createRandomActivityGroup(t)
+	newActivityGroup := createRandomActivityGroupRepository(t)
 	t.Parallel()
 
 	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
