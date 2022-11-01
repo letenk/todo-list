@@ -10,6 +10,7 @@ type Repository interface {
 	FindAll() ([]domain.ActivityGroup, error)
 	FindOne(id int) (domain.ActivityGroup, error)
 	Update(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
+	Delete(activityGroup domain.ActivityGroup) (bool, error)
 }
 
 type repository struct {
@@ -58,4 +59,13 @@ func (r *repository) Update(activityGroup domain.ActivityGroup) (domain.Activity
 	}
 
 	return activityGroup, nil
+}
+
+func (r *repository) Delete(activityGroup domain.ActivityGroup) (bool, error) {
+	err := r.db.Delete(&activityGroup).Error
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

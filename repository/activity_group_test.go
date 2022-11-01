@@ -131,3 +131,19 @@ func TestUpdateActivityGroup(t *testing.T) {
 	require.NotEqual(t, newActivityGroup.Title, updateActivityGroup.Title)
 	require.NotEqual(t, newActivityGroup.Email, updateActivityGroup.Email)
 }
+
+func TestDeleteActivityGroup(t *testing.T) {
+	dropTable()
+	newActivityGroup := createRandomActivityGroup(t)
+	t.Parallel()
+
+	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
+
+	ok, err := activityGroupRepository.Delete(newActivityGroup)
+	helper.ErrLogPanic(err)
+	assert.True(t, ok)
+
+	activityGroup, err := activityGroupRepository.FindOne(newActivityGroup.ID)
+	helper.ErrLogPanic(err)
+	assert.Equal(t, 0, activityGroup.ID)
+}
