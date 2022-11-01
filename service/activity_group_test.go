@@ -48,8 +48,8 @@ func createRandomActivityGroupService(t *testing.T) domain.ActivityGroup {
 		Email: jabufaker.RandomEmail(),
 	}
 
-	// Insert
-	newActivityGroup, err := service.Insert(data)
+	// Create
+	newActivityGroup, err := service.Create(data)
 	helper.ErrLogPanic(err)
 
 	// Test pass
@@ -69,7 +69,7 @@ func TestCreateActivityGroupServices(t *testing.T) {
 	createRandomActivityGroupService(t)
 }
 
-func TestGetActivityGroupsServices(t *testing.T) {
+func TestGetAllServices(t *testing.T) {
 	defer dropTable()
 	// Create some random data
 	for i := 0; i < 10; i++ {
@@ -86,7 +86,7 @@ func TestGetActivityGroupsServices(t *testing.T) {
 	service := service.NewServiceActivityGroup(repository)
 
 	// Get activity groups
-	activityGroups, err := service.GetActivityGroups()
+	activityGroups, err := service.GetAll()
 	helper.ErrLogPanic(err)
 
 	for _, data := range activityGroups {
@@ -100,7 +100,7 @@ func TestGetActivityGroupsServices(t *testing.T) {
 
 }
 
-func TestGetActivityGroupByIdService(t *testing.T) {
+func TestGetOneService(t *testing.T) {
 	defer dropTable()
 	// Create random data
 	newActivityGroup := createRandomActivityGroupService(t)
@@ -110,7 +110,7 @@ func TestGetActivityGroupByIdService(t *testing.T) {
 	service := service.NewServiceActivityGroup(repository)
 
 	// Find all
-	activityGroup, err := service.GetActivityGroupById(newActivityGroup.ID)
+	activityGroup, err := service.GetOne(newActivityGroup.ID)
 	helper.ErrLogPanic(err)
 
 	require.Equal(t, newActivityGroup.ID, activityGroup.ID)

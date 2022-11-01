@@ -11,9 +11,9 @@ import (
 )
 
 type ActivityGroupService interface {
-	Insert(req web.ActivityGroupRequest) (domain.ActivityGroup, error)
-	GetActivityGroups() ([]domain.ActivityGroup, error)
-	GetActivityGroupById(id int) (domain.ActivityGroup, error)
+	Create(req web.ActivityGroupRequest) (domain.ActivityGroup, error)
+	GetAll() ([]domain.ActivityGroup, error)
+	GetOne(id int) (domain.ActivityGroup, error)
 	Update(id int, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error)
 	Delete(id int) (bool, error)
 }
@@ -26,7 +26,7 @@ func NewServiceActivityGroup(repository repository.ActivityGroupRepository) *act
 	return &activityGroupService{repository}
 }
 
-func (s *activityGroupService) GetActivityGroups() ([]domain.ActivityGroup, error) {
+func (s *activityGroupService) GetAll() ([]domain.ActivityGroup, error) {
 	// Find all
 	activityGroups, err := s.repository.FindAll()
 
@@ -37,7 +37,7 @@ func (s *activityGroupService) GetActivityGroups() ([]domain.ActivityGroup, erro
 	return activityGroups, nil
 }
 
-func (s *activityGroupService) GetActivityGroupById(id int) (domain.ActivityGroup, error) {
+func (s *activityGroupService) GetOne(id int) (domain.ActivityGroup, error) {
 	// Find one
 	activityGroup, err := s.repository.FindOne(id)
 
@@ -48,7 +48,7 @@ func (s *activityGroupService) GetActivityGroupById(id int) (domain.ActivityGrou
 	return activityGroup, nil
 }
 
-func (s *activityGroupService) Insert(req web.ActivityGroupRequest) (domain.ActivityGroup, error) {
+func (s *activityGroupService) Create(req web.ActivityGroupRequest) (domain.ActivityGroup, error) {
 	activityGroup := domain.ActivityGroup{
 		Title: req.Title,
 		Email: req.Email,
