@@ -5,8 +5,7 @@ go 1.18
 require (
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-playground/assert/v2 v2.0.1
-	github.com/rizkydarmawan-letenk/jabufaker v1.0.0
+	github.com/rizkydarmawan-letenk/jabufaker v1.0.1
 	github.com/stretchr/testify v1.8.1
 	gorm.io/driver/mysql v1.4.3
 	gorm.io/gorm v1.24.0

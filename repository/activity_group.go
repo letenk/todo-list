@@ -8,6 +8,8 @@ import (
 type Repository interface {
 	Save(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
 	FindAll() ([]domain.ActivityGroup, error)
+	FindOne(id int) (domain.ActivityGroup, error)
+	Update(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
 }
 
 type repository struct {
@@ -29,7 +31,27 @@ func (r *repository) FindAll() ([]domain.ActivityGroup, error) {
 	return activityGroups, nil
 }
 
+func (r *repository) FindOne(id int) (domain.ActivityGroup, error) {
+	var activityGroup domain.ActivityGroup
+
+	err := r.db.Where("id = ?", id).Find(&activityGroup).Error
+	if err != nil {
+		return activityGroup, nil
+	}
+
+	return activityGroup, nil
+}
+
 func (r *repository) Save(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error) {
+	err := r.db.Create(&activityGroup).Error
+	if err != nil {
+		return activityGroup, err
+	}
+
+	return activityGroup, nil
+}
+
+func (r *repository) Update(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error) {
 	err := r.db.Save(&activityGroup).Error
 	if err != nil {
 		return activityGroup, err
