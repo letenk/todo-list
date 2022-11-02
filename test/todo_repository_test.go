@@ -9,7 +9,6 @@ import (
 	"github.com/letenk/todo-list/models/domain"
 	"github.com/letenk/todo-list/repository"
 	"github.com/rizkydarmawan-letenk/jabufaker"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -30,17 +29,17 @@ func createRandomTodoRepository(t *testing.T) domain.Todo {
 	helper.ErrLogPanic(err)
 
 	// Test pas
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
-	assert.NotEmpty(t, newTodo.ID)
-	assert.NotEmpty(t, newActivityGroup.CreatedAt)
-	assert.NotEmpty(t, newActivityGroup.UpdatedAt)
-	assert.Empty(t, newActivityGroup.DeletedAt)
+	require.NotEmpty(t, newTodo.ID)
+	require.NotEmpty(t, newActivityGroup.CreatedAt)
+	require.NotEmpty(t, newActivityGroup.UpdatedAt)
+	require.Empty(t, newActivityGroup.DeletedAt)
 
-	assert.Equal(t, todo.ActivityGroupID, newTodo.ActivityGroupID)
-	assert.Equal(t, todo.Title, newTodo.Title)
-	assert.Equal(t, todo.IsActive, newTodo.IsActive)
-	assert.Equal(t, todo.Priority, newTodo.Priority)
+	require.Equal(t, todo.ActivityGroupID, newTodo.ActivityGroupID)
+	require.Equal(t, todo.Title, newTodo.Title)
+	require.Equal(t, todo.IsActive, newTodo.IsActive)
+	require.Equal(t, todo.Priority, newTodo.Priority)
 
 	return newTodo
 }
@@ -63,8 +62,8 @@ func TestFindAllTodoRepository(t *testing.T) {
 	todos, err := todoRepository.FindAll()
 	helper.ErrLogPanic(err)
 
-	assert.NoError(t, err)
-	assert.NotEqual(t, 0, len(todos))
+	require.NoError(t, err)
+	require.NotEqual(t, 0, len(todos))
 
 	for _, data := range todos {
 		require.NotEmpty(t, data.ID)
@@ -108,8 +107,8 @@ func TestFindByActivityGroupTodoRepository(t *testing.T) {
 	todos, err := todoRepository.FindByActivityGroupID(todos[0].ActivityGroupID)
 	helper.ErrLogPanic(err)
 
-	assert.NoError(t, err)
-	assert.Equal(t, 1, len(todos))
+	require.NoError(t, err)
+	require.Equal(t, 1, len(todos))
 
 	for _, data := range todos {
 		// Equal
@@ -136,7 +135,7 @@ func TestFindOneTodoRepository(t *testing.T) {
 	todo, err := todoRepository.FindOne(newTodo.ID)
 	helper.ErrLogPanic(err)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Equal
 	require.Equal(t, todo.ID, newTodo.ID)
@@ -194,7 +193,7 @@ func TestUpdateTodoRepository(t *testing.T) {
 	todo, err := todoRepository.Update(dataUpdate)
 	helper.ErrLogPanic(err)
 
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	// Test
 	require.Equal(t, todo.ID, todos[0].ID)
@@ -220,11 +219,11 @@ func TestDeleteTodoRepository(t *testing.T) {
 	ok, err := todoRepository.Delete(newTodo)
 	helper.ErrLogPanic(err)
 
-	assert.NoError(t, err)
-	assert.True(t, ok)
+	require.NoError(t, err)
+	require.True(t, ok)
 
 	todo, err := todoRepository.FindOne(newTodo.ID)
 	helper.ErrLogPanic(err)
 	nullId := uint64(0)
-	assert.Equal(t, nullId, todo.ID)
+	require.Equal(t, nullId, todo.ID)
 }

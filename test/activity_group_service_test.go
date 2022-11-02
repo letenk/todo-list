@@ -11,7 +11,6 @@ import (
 	"github.com/letenk/todo-list/repository"
 	"github.com/letenk/todo-list/service"
 	"github.com/rizkydarmawan-letenk/jabufaker"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -29,12 +28,12 @@ func createRandomActivityGroupService(t *testing.T) domain.ActivityGroup {
 	helper.ErrLogPanic(err)
 
 	// Test pass
-	assert.Equal(t, data.Title, newActivityGroup.Title)
-	assert.Equal(t, data.Email, newActivityGroup.Email)
-	assert.NotEmpty(t, newActivityGroup.ID)
-	assert.NotEmpty(t, newActivityGroup.CreatedAt)
-	assert.NotEmpty(t, newActivityGroup.UpdatedAt)
-	assert.Nil(t, newActivityGroup.DeletedAt)
+	require.Equal(t, data.Title, newActivityGroup.Title)
+	require.Equal(t, data.Email, newActivityGroup.Email)
+	require.NotEmpty(t, newActivityGroup.ID)
+	require.NotEmpty(t, newActivityGroup.CreatedAt)
+	require.NotEmpty(t, newActivityGroup.UpdatedAt)
+	require.Nil(t, newActivityGroup.DeletedAt)
 
 	return newActivityGroup
 }

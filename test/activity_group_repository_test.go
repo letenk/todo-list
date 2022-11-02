@@ -9,7 +9,6 @@ import (
 	"github.com/letenk/todo-list/models/domain"
 	"github.com/letenk/todo-list/repository"
 	"github.com/rizkydarmawan-letenk/jabufaker"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,12 +25,12 @@ func createRandomActivityGroupRepository(t *testing.T) domain.ActivityGroup {
 	helper.ErrLogPanic(err)
 
 	// Test pass
-	assert.Equal(t, activityGroup.Title, newActivityGroup.Title)
-	assert.Equal(t, activityGroup.Email, newActivityGroup.Email)
-	assert.NotEmpty(t, newActivityGroup.ID)
-	assert.NotEmpty(t, newActivityGroup.CreatedAt)
-	assert.NotEmpty(t, newActivityGroup.UpdatedAt)
-	assert.Empty(t, newActivityGroup.DeletedAt)
+	require.Equal(t, activityGroup.Title, newActivityGroup.Title)
+	require.Equal(t, activityGroup.Email, newActivityGroup.Email)
+	require.NotEmpty(t, newActivityGroup.ID)
+	require.NotEmpty(t, newActivityGroup.CreatedAt)
+	require.NotEmpty(t, newActivityGroup.UpdatedAt)
+	require.Empty(t, newActivityGroup.DeletedAt)
 
 	return newActivityGroup
 }
@@ -126,9 +125,9 @@ func TestDeleteActivityGroupRepository(t *testing.T) {
 
 	ok, err := activityGroupRepository.Delete(newActivityGroup)
 	helper.ErrLogPanic(err)
-	assert.True(t, ok)
+	require.True(t, ok)
 
 	activityGroup, err := activityGroupRepository.FindOne(newActivityGroup.ID)
 	helper.ErrLogPanic(err)
-	assert.Equal(t, 0, int(activityGroup.ID))
+	require.Equal(t, 0, int(activityGroup.ID))
 }

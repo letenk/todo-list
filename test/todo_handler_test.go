@@ -12,7 +12,6 @@ import (
 
 	"github.com/letenk/todo-list/models/web"
 	"github.com/rizkydarmawan-letenk/jabufaker"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -331,24 +330,24 @@ func TestUpdateTodo(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 200, response.StatusCode)
-		assert.Equal(t, "Success", responseBody["status"])
-		assert.Equal(t, "Success", responseBody["message"])
-		assert.NotEmpty(t, responseBody["data"])
+		require.Equal(t, 200, response.StatusCode)
+		require.Equal(t, "Success", responseBody["status"])
+		require.Equal(t, "Success", responseBody["message"])
+		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
 		fmt.Println(contextData)
-		assert.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
-		assert.Equal(t, newTodo.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
-		assert.Equal(t, newTodo.IsActive, contextData["is_active"])
-		assert.Equal(t, newTodo.Priority, contextData["priority"])
+		require.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
+		require.Equal(t, newTodo.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
+		require.Equal(t, newTodo.IsActive, contextData["is_active"])
+		require.Equal(t, newTodo.Priority, contextData["priority"])
 
-		assert.NotEmpty(t, contextData["created_at"])
+		require.NotEmpty(t, contextData["created_at"])
 
-		assert.NotEqual(t, newTodo.UpdatedAt.String(), contextData["updated_at"])
-		assert.NotEqual(t, newTodo.Title, contextData["title"])
+		require.NotEqual(t, newTodo.UpdatedAt.String(), contextData["updated_at"])
+		require.NotEqual(t, newTodo.Title, contextData["title"])
 
-		assert.Nil(t, newTodo.DeletetAt)
+		require.Nil(t, newTodo.DeletetAt)
 	})
 
 	t.Run("Success update todo with field is_active", func(t *testing.T) {
@@ -374,23 +373,23 @@ func TestUpdateTodo(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 200, response.StatusCode)
-		assert.Equal(t, "Success", responseBody["status"])
-		assert.Equal(t, "Success", responseBody["message"])
-		assert.NotEmpty(t, responseBody["data"])
+		require.Equal(t, 200, response.StatusCode)
+		require.Equal(t, "Success", responseBody["status"])
+		require.Equal(t, "Success", responseBody["message"])
+		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
-		assert.Equal(t, newTodo.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
-		assert.Equal(t, newTodo.Title, contextData["title"])
-		assert.Equal(t, newTodo.Priority, contextData["priority"])
+		require.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
+		require.Equal(t, newTodo.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
+		require.Equal(t, newTodo.Title, contextData["title"])
+		require.Equal(t, newTodo.Priority, contextData["priority"])
 
-		assert.NotEmpty(t, contextData["created_at"])
+		require.NotEmpty(t, contextData["created_at"])
 
-		assert.NotEqual(t, newTodo.UpdatedAt.String(), contextData["updated_at"])
-		assert.NotEqual(t, newTodo.IsActive, contextData["is_active"])
+		require.NotEqual(t, newTodo.UpdatedAt.String(), contextData["updated_at"])
+		require.NotEqual(t, newTodo.IsActive, contextData["is_active"])
 
-		assert.Nil(t, newTodo.DeletetAt)
+		require.Nil(t, newTodo.DeletetAt)
 
 	})
 
@@ -416,11 +415,11 @@ func TestUpdateTodo(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 404, response.StatusCode)
-		assert.Equal(t, "Not Found", responseBody["status"])
+		require.Equal(t, 404, response.StatusCode)
+		require.Equal(t, "Not Found", responseBody["status"])
 		message := fmt.Sprintf("Todo with ID %s Not Found", wrongId)
-		assert.Equal(t, message, responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, message, responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 }
 
