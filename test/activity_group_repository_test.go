@@ -13,11 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func dropTable() {
-	// Drop table after test
-	ConnTest.Raw("delete from activity_groups")
-}
-
 func createRandomActivityGroupRepository(t *testing.T) domain.ActivityGroup {
 	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
 
@@ -42,14 +37,14 @@ func createRandomActivityGroupRepository(t *testing.T) domain.ActivityGroup {
 }
 
 func TestCreateActivityGroup(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	t.Parallel()
 	createRandomActivityGroupRepository(t)
 }
 
 func TestFindAllActivityGroup(t *testing.T) {
 	var mutex sync.Mutex
-	defer dropTable()
+	defer DropTable()
 	// Create some random data
 	for i := 0; i < 10; i++ {
 		go func() {
@@ -77,7 +72,7 @@ func TestFindAllActivityGroup(t *testing.T) {
 }
 
 func TestFindOneActivityGroup(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	// Create random data
 	newActivityGroup := createRandomActivityGroupRepository(t)
 
@@ -97,7 +92,7 @@ func TestFindOneActivityGroup(t *testing.T) {
 }
 
 func TestUpdateActivityGroupRepository(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	newActivityGroup := createRandomActivityGroupRepository(t)
 	t.Parallel()
 	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
@@ -123,7 +118,7 @@ func TestUpdateActivityGroupRepository(t *testing.T) {
 }
 
 func TestDeleteActivityGroupRepository(t *testing.T) {
-	dropTable()
+	DropTable()
 	newActivityGroup := createRandomActivityGroupRepository(t)
 	t.Parallel()
 

@@ -13,6 +13,11 @@ import (
 var ConnTest *gorm.DB
 var Route *gin.Engine
 
+func DropTable() {
+	// Drop table after test
+	ConnTest.Raw("delete from activity_groups")
+}
+
 func TestMain(m *testing.M) {
 	// Set env
 	os.Setenv("MYSQL_USER", "root")

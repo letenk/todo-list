@@ -40,14 +40,14 @@ func createRandomActivityGroupService(t *testing.T) domain.ActivityGroup {
 }
 
 func TestCreateActivityGroupServices(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	t.Parallel()
 	createRandomActivityGroupService(t)
 }
 
 func TestGetAllServices(t *testing.T) {
 	var mutex sync.Mutex
-	defer dropTable()
+	defer DropTable()
 	// Create some random data
 	for i := 0; i < 10; i++ {
 		go func() {
@@ -78,7 +78,7 @@ func TestGetAllServices(t *testing.T) {
 }
 
 func TestGetOneService(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	// Create random data
 	newActivityGroup := createRandomActivityGroupService(t)
 
@@ -99,7 +99,7 @@ func TestGetOneService(t *testing.T) {
 }
 
 func TestUpdateActivityGroupService(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	// Create random data
 	newActivityGroup := createRandomActivityGroupService(t)
 
@@ -138,7 +138,7 @@ func TestUpdateActivityGroupService(t *testing.T) {
 }
 
 func TestDeleteActivityGroupService(t *testing.T) {
-	defer dropTable()
+	defer DropTable()
 	// Create random data
 	newActivityGroup := createRandomActivityGroupService(t)
 
