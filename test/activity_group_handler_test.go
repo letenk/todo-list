@@ -12,7 +12,7 @@ import (
 
 	"github.com/letenk/todo-list/models/web"
 	"github.com/rizkydarmawan-letenk/jabufaker"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateResponse {
@@ -37,18 +37,18 @@ func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateRespo
 	var responseBody map[string]interface{}
 	json.Unmarshal(body, &responseBody)
 
-	assert.Equal(t, 201, response.StatusCode)
-	assert.Equal(t, "Success", responseBody["status"])
-	assert.Equal(t, "Success", responseBody["message"])
+	require.Equal(t, 201, response.StatusCode)
+	require.Equal(t, "Success", responseBody["status"])
+	require.Equal(t, "Success", responseBody["message"])
 
-	assert.NotEmpty(t, responseBody["data"])
+	require.NotEmpty(t, responseBody["data"])
 
 	var contextData = responseBody["data"].(map[string]interface{})
-	assert.NotEmpty(t, contextData["id"])
-	assert.NotEmpty(t, contextData["created_at"])
-	assert.NotEmpty(t, contextData["updated_at"])
-	assert.Equal(t, data.Title, contextData["title"])
-	assert.Equal(t, data.Email, contextData["email"])
+	require.NotEmpty(t, contextData["id"])
+	require.NotEmpty(t, contextData["created_at"])
+	require.NotEmpty(t, contextData["updated_at"])
+	require.Equal(t, data.Title, contextData["title"])
+	require.Equal(t, data.Email, contextData["email"])
 
 	newActivityGroup := web.ActivityGroupCreateResponse{
 		ID:    uint64(contextData["id"].(float64)),
@@ -82,10 +82,10 @@ func TestActivityGroupCreateHandler(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 400, response.StatusCode)
-		assert.Equal(t, "Bad Request", responseBody["status"])
-		assert.Equal(t, "title cannot be null", responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, 400, response.StatusCode)
+		require.Equal(t, "Bad Request", responseBody["status"])
+		require.Equal(t, "title cannot be null", responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 }
 
@@ -114,24 +114,24 @@ func TestGetAllActivityGroupHandler(t *testing.T) {
 	var responseBody map[string]interface{}
 	json.Unmarshal(body, &responseBody)
 
-	assert.Equal(t, 200, response.StatusCode)
-	assert.Equal(t, "Success", responseBody["status"])
-	assert.Equal(t, "Success", responseBody["message"])
+	require.Equal(t, 200, response.StatusCode)
+	require.Equal(t, "Success", responseBody["status"])
+	require.Equal(t, "Success", responseBody["message"])
 
-	assert.NotEmpty(t, responseBody["data"])
+	require.NotEmpty(t, responseBody["data"])
 
 	var contextData = responseBody["data"].([]interface{})
 
-	assert.NotEqual(t, 0, len(contextData))
+	require.NotEqual(t, 0, len(contextData))
 	// Data is not null
 
 	for _, data := range contextData {
 		list := data.(map[string]interface{})
-		assert.NotEmpty(t, list["id"])
-		assert.NotEmpty(t, list["title"])
-		assert.NotEmpty(t, list["email"])
-		assert.NotEmpty(t, list["created_at"])
-		assert.NotEmpty(t, list["updated_at"])
+		require.NotEmpty(t, list["id"])
+		require.NotEmpty(t, list["title"])
+		require.NotEmpty(t, list["email"])
+		require.NotEmpty(t, list["created_at"])
+		require.NotEmpty(t, list["updated_at"])
 	}
 }
 
@@ -154,20 +154,20 @@ func TestGetOneActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 200, response.StatusCode)
-		assert.Equal(t, "Success", responseBody["status"])
-		assert.Equal(t, "Success", responseBody["message"])
+		require.Equal(t, 200, response.StatusCode)
+		require.Equal(t, "Success", responseBody["status"])
+		require.Equal(t, "Success", responseBody["message"])
 
-		assert.NotEmpty(t, responseBody["data"])
+		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
-		assert.Equal(t, newActivityGroup.Title, contextData["title"])
-		assert.Equal(t, newActivityGroup.Email, contextData["email"])
+		require.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
+		require.Equal(t, newActivityGroup.Title, contextData["title"])
+		require.Equal(t, newActivityGroup.Email, contextData["email"])
 
-		assert.NotEmpty(t, contextData["created_at"])
-		assert.NotEmpty(t, contextData["updated_at"])
-		assert.Nil(t, contextData["deteled_at"])
+		require.NotEmpty(t, contextData["created_at"])
+		require.NotEmpty(t, contextData["updated_at"])
+		require.Nil(t, contextData["deteled_at"])
 	})
 
 	t.Run("Id not found", func(t *testing.T) {
@@ -185,11 +185,11 @@ func TestGetOneActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 404, response.StatusCode)
-		assert.Equal(t, "Not Found", responseBody["status"])
+		require.Equal(t, 404, response.StatusCode)
+		require.Equal(t, "Not Found", responseBody["status"])
 		message := fmt.Sprintf("Activity with ID %s Not Found", wrongId)
-		assert.Equal(t, message, responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, message, responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 }
 
@@ -197,7 +197,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 	t.Parallel()
 	newActivityGroup := createRandomActivityGroupHandler(t)
 
-	t.Run("Success get one", func(t *testing.T) {
+	t.Run("Success updated activity group", func(t *testing.T) {
 		data := web.ActivityGroupUpdateRequest{
 			Title: jabufaker.RandomString(20),
 		}
@@ -219,19 +219,19 @@ func TestUpdateActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 200, response.StatusCode)
-		assert.Equal(t, "Success", responseBody["status"])
-		assert.Equal(t, "Success", responseBody["message"])
-		assert.NotEmpty(t, responseBody["data"])
+		require.Equal(t, 200, response.StatusCode)
+		require.Equal(t, "Success", responseBody["status"])
+		require.Equal(t, "Success", responseBody["message"])
+		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
-		assert.Equal(t, newActivityGroup.Email, contextData["email"])
+		require.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
+		require.Equal(t, newActivityGroup.Email, contextData["email"])
 
-		assert.NotEqual(t, newActivityGroup.UpdatedAt.String(), contextData["updated_at"])
-		assert.NotEqual(t, newActivityGroup.Title, contextData["title"])
+		require.NotEqual(t, newActivityGroup.UpdatedAt.String(), contextData["updated_at"])
+		require.NotEqual(t, newActivityGroup.Title, contextData["title"])
 
-		assert.NotEmpty(t, contextData["created_at"])
+		require.NotEmpty(t, contextData["created_at"])
 
 	})
 
@@ -253,10 +253,10 @@ func TestUpdateActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 400, response.StatusCode)
-		assert.Equal(t, "Bad Request", responseBody["status"])
-		assert.Equal(t, "title cannot be null", responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, 400, response.StatusCode)
+		require.Equal(t, "Bad Request", responseBody["status"])
+		require.Equal(t, "title cannot be null", responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 
 	t.Run("Id not found", func(t *testing.T) {
@@ -281,11 +281,11 @@ func TestUpdateActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 404, response.StatusCode)
-		assert.Equal(t, "Not Found", responseBody["status"])
+		require.Equal(t, 404, response.StatusCode)
+		require.Equal(t, "Not Found", responseBody["status"])
 		message := fmt.Sprintf("Activity with ID %s Not Found", wrongId)
-		assert.Equal(t, message, responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, message, responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 }
 
@@ -308,10 +308,10 @@ func TestDeleteActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 200, response.StatusCode)
-		assert.Equal(t, "Success", responseBody["status"])
-		assert.Equal(t, "Success", responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, 200, response.StatusCode)
+		require.Equal(t, "Success", responseBody["status"])
+		require.Equal(t, "Success", responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 
 	t.Run("Id not found", func(t *testing.T) {
@@ -329,10 +329,10 @@ func TestDeleteActivityGroup(t *testing.T) {
 		var responseBody map[string]interface{}
 		json.Unmarshal(body, &responseBody)
 
-		assert.Equal(t, 404, response.StatusCode)
-		assert.Equal(t, "Not Found", responseBody["status"])
+		require.Equal(t, 404, response.StatusCode)
+		require.Equal(t, "Not Found", responseBody["status"])
 		message := fmt.Sprintf("Activity with ID %s Not Found", wrongId)
-		assert.Equal(t, message, responseBody["message"])
-		assert.Empty(t, responseBody["data"])
+		require.Equal(t, message, responseBody["message"])
+		require.Empty(t, responseBody["data"])
 	})
 }
