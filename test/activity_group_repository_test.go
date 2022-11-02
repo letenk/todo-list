@@ -1,44 +1,25 @@
-package repository_test
+package test
 
 import (
-	"os"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/letenk/todo-list/config"
 	"github.com/letenk/todo-list/helper"
 	"github.com/letenk/todo-list/models/domain"
 	"github.com/letenk/todo-list/repository"
 	"github.com/rizkydarmawan-letenk/jabufaker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 )
-
-var mutex sync.Mutex
-var conn *gorm.DB
-
-func TestMain(m *testing.M) {
-	// Set env
-	os.Setenv("MYSQL_USER", "root")
-	os.Setenv("MYSQL_PASSWORD", "root")
-	os.Setenv("MYSQL_HOST", "127.0.0.1")
-	os.Setenv("MYSQL_PORT", "3306")
-	os.Setenv("MYSQL_DBNAME", "todo4")
-
-	db := config.SetupDB()
-	conn = db
-	m.Run()
-}
 
 func dropTable() {
 	// Drop table after test
-	conn.Raw("delete from activity_groups")
+	ConnTest.Raw("delete from activity_groups")
 }
 
 func createRandomActivityGroupRepository(t *testing.T) domain.ActivityGroup {
-	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
+	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
 
 	activityGroup := domain.ActivityGroup{
 		Title: jabufaker.RandomString(20),
@@ -67,6 +48,7 @@ func TestCreateActivityGroup(t *testing.T) {
 }
 
 func TestFindAllActivityGroup(t *testing.T) {
+	var mutex sync.Mutex
 	defer dropTable()
 	// Create some random data
 	for i := 0; i < 10; i++ {
@@ -78,7 +60,7 @@ func TestFindAllActivityGroup(t *testing.T) {
 	}
 
 	t.Parallel()
-	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
+	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
 
 	// Find all
 	activityGroup, err := activityGroupRepository.FindAll()
@@ -100,7 +82,7 @@ func TestFindOneActivityGroup(t *testing.T) {
 	newActivityGroup := createRandomActivityGroupRepository(t)
 
 	t.Parallel()
-	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
+	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
 
 	// Find all
 	activityGroup, err := activityGroupRepository.FindOne(newActivityGroup.ID)
@@ -114,11 +96,11 @@ func TestFindOneActivityGroup(t *testing.T) {
 	require.Empty(t, activityGroup.DeletedAt)
 }
 
-func TestUpdateActivityGroup(t *testing.T) {
+func TestUpdateActivityGroupRepository(t *testing.T) {
 	defer dropTable()
 	newActivityGroup := createRandomActivityGroupRepository(t)
 	t.Parallel()
-	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
+	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
 
 	dataUpdate := domain.ActivityGroup{
 		ID:        newActivityGroup.ID,
@@ -140,12 +122,12 @@ func TestUpdateActivityGroup(t *testing.T) {
 	require.NotEqual(t, newActivityGroup.Email, updateActivityGroup.Email)
 }
 
-func TestDeleteActivityGroup(t *testing.T) {
+func TestDeleteActivityGroupRepository(t *testing.T) {
 	dropTable()
 	newActivityGroup := createRandomActivityGroupRepository(t)
 	t.Parallel()
 
-	activityGroupRepository := repository.NewRepositoryActivityGroup(conn)
+	activityGroupRepository := repository.NewRepositoryActivityGroup(ConnTest)
 
 	ok, err := activityGroupRepository.Delete(newActivityGroup)
 	helper.ErrLogPanic(err)

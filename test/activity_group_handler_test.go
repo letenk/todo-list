@@ -1,4 +1,4 @@
-package handler_test
+package test
 
 import (
 	"encoding/json"
@@ -6,40 +6,14 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"sync"
 	"testing"
 
-	"github.com/gin-gonic/gin"
-	"github.com/letenk/todo-list/config"
 	"github.com/letenk/todo-list/models/web"
-	"github.com/letenk/todo-list/router"
 	"github.com/rizkydarmawan-letenk/jabufaker"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
-
-var mutex sync.Mutex
-var conn *gorm.DB
-var route *gin.Engine
-
-func TestMain(m *testing.M) {
-	// Set env
-	os.Setenv("MYSQL_USER", "root")
-	os.Setenv("MYSQL_PASSWORD", "root")
-	os.Setenv("MYSQL_HOST", "127.0.0.1")
-	os.Setenv("MYSQL_PORT", "3306")
-	os.Setenv("MYSQL_DBNAME", "todo4")
-
-	// Open connection
-	db := config.SetupDB()
-	conn = db
-
-	// setup router
-	route = router.SetupRouter(db)
-	m.Run()
-}
 
 func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateResponse {
 	data := web.ActivityGroupRequest{
@@ -55,7 +29,7 @@ func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateRespo
 
 	recorder := httptest.NewRecorder()
 
-	route.ServeHTTP(recorder, request)
+	Route.ServeHTTP(recorder, request)
 
 	response := recorder.Result()
 
@@ -100,7 +74,7 @@ func TestActivityGroupCreateHandler(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -116,6 +90,7 @@ func TestActivityGroupCreateHandler(t *testing.T) {
 }
 
 func TestGetAllActivityGroupHandler(t *testing.T) {
+	var mutex sync.Mutex
 	t.Parallel()
 	// Create some random data
 	for i := 0; i < 10; i++ {
@@ -131,7 +106,7 @@ func TestGetAllActivityGroupHandler(t *testing.T) {
 
 	recorder := httptest.NewRecorder()
 
-	route.ServeHTTP(recorder, request)
+	Route.ServeHTTP(recorder, request)
 
 	response := recorder.Result()
 
@@ -171,7 +146,7 @@ func TestGetOneActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -202,7 +177,7 @@ func TestGetOneActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -236,7 +211,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -270,7 +245,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -298,7 +273,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -325,7 +300,7 @@ func TestDeleteActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 
@@ -346,7 +321,7 @@ func TestDeleteActivityGroup(t *testing.T) {
 
 		recorder := httptest.NewRecorder()
 
-		route.ServeHTTP(recorder, request)
+		Route.ServeHTTP(recorder, request)
 
 		response := recorder.Result()
 

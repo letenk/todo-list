@@ -1,12 +1,10 @@
-package service_test
+package test
 
 import (
 	"fmt"
-	"os"
 	"sync"
 	"testing"
 
-	"github.com/letenk/todo-list/config"
 	"github.com/letenk/todo-list/helper"
 	"github.com/letenk/todo-list/models/domain"
 	"github.com/letenk/todo-list/models/web"
@@ -15,32 +13,10 @@ import (
 	"github.com/rizkydarmawan-letenk/jabufaker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 )
 
-var mutex sync.Mutex
-var conn *gorm.DB
-
-func dropTable() {
-	// Drop table after test
-	conn.Raw("delete from activity_groups")
-}
-
-func TestMain(m *testing.M) {
-	// Set env
-	os.Setenv("MYSQL_USER", "root")
-	os.Setenv("MYSQL_PASSWORD", "root")
-	os.Setenv("MYSQL_HOST", "127.0.0.1")
-	os.Setenv("MYSQL_PORT", "3306")
-	os.Setenv("MYSQL_DBNAME", "todo4")
-
-	db := config.SetupDB()
-	conn = db
-	m.Run()
-}
-
 func createRandomActivityGroupService(t *testing.T) domain.ActivityGroup {
-	repository := repository.NewRepositoryActivityGroup(conn)
+	repository := repository.NewRepositoryActivityGroup(ConnTest)
 	service := service.NewServiceActivityGroup(repository)
 
 	data := web.ActivityGroupRequest{
@@ -70,6 +46,7 @@ func TestCreateActivityGroupServices(t *testing.T) {
 }
 
 func TestGetAllServices(t *testing.T) {
+	var mutex sync.Mutex
 	defer dropTable()
 	// Create some random data
 	for i := 0; i < 10; i++ {
@@ -82,7 +59,7 @@ func TestGetAllServices(t *testing.T) {
 
 	t.Parallel()
 
-	repository := repository.NewRepositoryActivityGroup(conn)
+	repository := repository.NewRepositoryActivityGroup(ConnTest)
 	service := service.NewServiceActivityGroup(repository)
 
 	// Get activity groups
@@ -106,7 +83,7 @@ func TestGetOneService(t *testing.T) {
 	newActivityGroup := createRandomActivityGroupService(t)
 
 	t.Parallel()
-	repository := repository.NewRepositoryActivityGroup(conn)
+	repository := repository.NewRepositoryActivityGroup(ConnTest)
 	service := service.NewServiceActivityGroup(repository)
 
 	// Find all
@@ -127,7 +104,7 @@ func TestUpdateActivityGroupService(t *testing.T) {
 	newActivityGroup := createRandomActivityGroupService(t)
 
 	t.Parallel()
-	repository := repository.NewRepositoryActivityGroup(conn)
+	repository := repository.NewRepositoryActivityGroup(ConnTest)
 	service := service.NewServiceActivityGroup(repository)
 
 	dataUpdated := web.ActivityGroupUpdateRequest{
@@ -166,7 +143,7 @@ func TestDeleteActivityGroupService(t *testing.T) {
 	newActivityGroup := createRandomActivityGroupService(t)
 
 	t.Parallel()
-	repository := repository.NewRepositoryActivityGroup(conn)
+	repository := repository.NewRepositoryActivityGroup(ConnTest)
 	service := service.NewServiceActivityGroup(repository)
 
 	t.Run("Delete success", func(t *testing.T) {
