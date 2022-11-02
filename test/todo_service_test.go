@@ -53,38 +53,73 @@ func TestCreateTodoService(t *testing.T) {
 }
 
 func TestGetAllTodoServices(t *testing.T) {
+	t.Parallel()
 	var mutex sync.Mutex
+	var newTodos []domain.Todo
+
+	// Create channel for store new todos created
+	channel := make(chan domain.Todo)
+	defer close(channel)
 	// Create some random data
 	for i := 0; i < 10; i++ {
 		go func() {
 			mutex.Lock()
-			createRandomTodoService(t)
+			newTodo := createRandomTodoService(t)
+			channel <- newTodo
 			mutex.Unlock()
 		}()
+		newTodos = append(newTodos, <-channel)
 	}
-
-	t.Parallel()
 
 	repository := repository.NewRepositoryTodo(ConnTest)
 	service := service.NewServiceTodo(repository)
 
-	// Get activity groups
-	todos, err := service.GetAll()
-	helper.ErrLogPanic(err)
+	t.Run("Get all todos without query activity_group_id", func(t *testing.T) {
+		// Get activity groups
+		activityGroupId := int64(0)
+		todos, err := service.GetAll(uint64(activityGroupId))
+		helper.ErrLogPanic(err)
 
-	for _, data := range todos {
-		require.NotEmpty(t, data.ID)
-		require.NotEmpty(t, data.Title)
-		require.NotEmpty(t, data.ActivityGroupID)
+		// Length todos must be greater than 0
+		require.NotEqual(t, 0, len((todos)))
 
-		require.NotNil(t, data.IsActive)
+		for _, data := range todos {
+			require.NotEmpty(t, data.ID)
+			require.NotEmpty(t, data.Title)
+			require.NotEmpty(t, data.ActivityGroupID)
 
-		require.NotEmpty(t, data.Priority)
-		require.NotEmpty(t, data.CreatedAt)
-		require.NotEmpty(t, data.UpdatedAt)
+			require.NotNil(t, data.IsActive)
 
-		require.Nil(t, data.DeletedAt)
-	}
+			require.NotEmpty(t, data.Priority)
+			require.NotEmpty(t, data.CreatedAt)
+			require.NotEmpty(t, data.UpdatedAt)
+
+			require.Nil(t, data.DeletedAt)
+		}
+	})
+
+	t.Run("Get all todos with query activity_group_id", func(t *testing.T) {
+		// Get activity groups
+		activityGroupId := newTodos[0].ActivityGroupID
+		todos, err := service.GetAll(uint64(activityGroupId))
+		helper.ErrLogPanic(err)
+
+		// Length todos must be 1
+		require.Equal(t, 1, len((todos)))
+
+		for _, data := range todos {
+			require.Equal(t, newTodos[0].ID, data.ID)
+			require.Equal(t, newTodos[0].Title, data.Title)
+			require.Equal(t, newTodos[0].ActivityGroupID, data.ActivityGroupID)
+			require.Equal(t, newTodos[0].IsActive, data.IsActive)
+			require.Equal(t, newTodos[0].Priority, data.Priority)
+
+			require.Equal(t, todos[0].CreatedAt, data.CreatedAt)
+			require.Equal(t, todos[0].UpdatedAt, data.UpdatedAt)
+
+			require.Nil(t, data.DeletedAt)
+		}
+	})
 
 }
 
@@ -108,46 +143,6 @@ func TestGetOneTodoServices(t *testing.T) {
 	require.NotEmpty(t, todo.CreatedAt)
 	require.NotEmpty(t, todo.UpdatedAt)
 	require.Empty(t, todo.DeletedAt)
-}
-
-func TestGetByActivityGroupIdTodoServices(t *testing.T) {
-	t.Parallel()
-	var mutex sync.Mutex
-	var newTodos []domain.Todo
-
-	// Create channel for store result new data from function createRandomTodoService
-	channel := make(chan domain.Todo)
-	defer close(channel)
-
-	// Create some random data
-	for i := 0; i < 10; i++ {
-		go func() {
-			mutex.Lock()
-			newTodos := createRandomTodoService(t)
-			channel <- newTodos
-			mutex.Unlock()
-		}()
-		newTodos = append(newTodos, <-channel)
-	}
-
-	repository := repository.NewRepositoryTodo(ConnTest)
-	service := service.NewServiceTodo(repository)
-
-	// Get activity groups
-	todos, err := service.GetByActivityGroupID(newTodos[0].ID)
-	helper.ErrLogPanic(err)
-
-	for _, data := range todos {
-		require.Equal(t, newTodos[0].ID, data.ID)
-		require.Equal(t, newTodos[0].Title, data.Title)
-		require.Equal(t, newTodos[0].ActivityGroupID, data.ActivityGroupID)
-		require.Equal(t, newTodos[0].IsActive, data.IsActive)
-		require.Equal(t, newTodos[0].Priority, data.Priority)
-
-		require.NotEmpty(t, data.CreatedAt)
-		require.NotEmpty(t, data.UpdatedAt)
-		require.Empty(t, data.DeletedAt)
-	}
 }
 
 func TestUpdateTodoService(t *testing.T) {
