@@ -50,7 +50,7 @@ func SetupDB() *gorm.DB {
 			counts++
 		} else {
 			// Auto Migrate
-			err = conn.AutoMigrate(&domain.ActivityGroup{})
+			err = conn.AutoMigrate(&domain.ActivityGroup{}, &domain.Todo{})
 
 			if err != nil {
 				log.Fatalf("Failed to auto migration %v", err)
