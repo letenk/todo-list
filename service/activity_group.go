@@ -13,9 +13,9 @@ import (
 type ActivityGroupService interface {
 	Create(req web.ActivityGroupRequest) (domain.ActivityGroup, error)
 	GetAll() ([]domain.ActivityGroup, error)
-	GetOne(id int) (domain.ActivityGroup, error)
-	Update(id int, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error)
-	Delete(id int) (bool, error)
+	GetOne(id int64) (domain.ActivityGroup, error)
+	Update(id int64, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error)
+	Delete(id int64) (bool, error)
 }
 
 type activityGroupService struct {
@@ -37,7 +37,7 @@ func (s *activityGroupService) GetAll() ([]domain.ActivityGroup, error) {
 	return activityGroups, nil
 }
 
-func (s *activityGroupService) GetOne(id int) (domain.ActivityGroup, error) {
+func (s *activityGroupService) GetOne(id int64) (domain.ActivityGroup, error) {
 	// Find one
 	activityGroup, err := s.repository.FindOne(id)
 
@@ -63,7 +63,7 @@ func (s *activityGroupService) Create(req web.ActivityGroupRequest) (domain.Acti
 	return newActivityGroup, nil
 }
 
-func (s *activityGroupService) Update(id int, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error) {
+func (s *activityGroupService) Update(id int64, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error) {
 	// Find one
 	activityGroup, err := s.repository.FindOne(id)
 	// If activity group not found
@@ -90,7 +90,7 @@ func (s *activityGroupService) Update(id int, req web.ActivityGroupUpdateRequest
 	return updatedActivityGroup, nil
 }
 
-func (s *activityGroupService) Delete(id int) (bool, error) {
+func (s *activityGroupService) Delete(id int64) (bool, error) {
 	// Find one
 	activityGroup, err := s.repository.FindOne(id)
 	// If activity group not found

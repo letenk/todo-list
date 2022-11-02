@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -24,11 +23,6 @@ import (
 var mutex sync.Mutex
 var conn *gorm.DB
 var route *gin.Engine
-
-func dropTable() {
-	// Drop table after test
-	conn.Raw("delete from activity_groups")
-}
 
 func TestMain(m *testing.M) {
 	// Set env
@@ -83,7 +77,7 @@ func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateRespo
 	assert.Equal(t, data.Email, contextData["email"])
 
 	newActivityGroup := web.ActivityGroupCreateResponse{
-		ID:    int(contextData["id"].(float64)),
+		ID:    int64(contextData["id"].(float64)),
 		Title: contextData["title"].(string),
 		Email: contextData["email"].(string),
 	}
@@ -171,7 +165,8 @@ func TestGetOneActivityGroup(t *testing.T) {
 	newActivityGroup := createRandomActivityGroupHandler(t)
 
 	t.Run("Success get one", func(t *testing.T) {
-		request := httptest.NewRequest(http.MethodGet, "http://localhost:3030/activity-groups/"+strconv.Itoa(newActivityGroup.ID), nil)
+		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		request := httptest.NewRequest(http.MethodGet, "http://localhost:3030/activity-groups/"+id, nil)
 		request.Header.Add("Content-Type", "application/json")
 
 		recorder := httptest.NewRecorder()
@@ -191,7 +186,7 @@ func TestGetOneActivityGroup(t *testing.T) {
 		assert.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newActivityGroup.ID, int(contextData["id"].(float64)))
+		assert.Equal(t, newActivityGroup.ID, int64(contextData["id"].(float64)))
 		assert.Equal(t, newActivityGroup.Title, contextData["title"])
 		assert.Equal(t, newActivityGroup.Email, contextData["email"])
 
@@ -235,7 +230,8 @@ func TestUpdateActivityGroup(t *testing.T) {
 		dataBody := fmt.Sprintf(`{"title": "%s"}`, data.Title)
 		requestBody := strings.NewReader(dataBody)
 
-		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/activity-groups/"+strconv.Itoa(newActivityGroup.ID), requestBody)
+		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/activity-groups/"+id, requestBody)
 		request.Header.Add("Content-Type", "application/json")
 
 		recorder := httptest.NewRecorder()
@@ -254,7 +250,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 		assert.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newActivityGroup.ID, int(contextData["id"].(float64)))
+		assert.Equal(t, newActivityGroup.ID, int64(contextData["id"].(float64)))
 		assert.Equal(t, newActivityGroup.Email, contextData["email"])
 
 		assert.NotEqual(t, newActivityGroup.UpdatedAt.String(), contextData["updated_at"])
@@ -268,7 +264,8 @@ func TestUpdateActivityGroup(t *testing.T) {
 		dataBody := fmt.Sprintf(`{"title": "%s"}`, "")
 		requestBody := strings.NewReader(dataBody)
 
-		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/activity-groups/"+strconv.Itoa(newActivityGroup.ID), requestBody)
+		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/activity-groups/"+id, requestBody)
 		request.Header.Add("Content-Type", "application/json")
 
 		recorder := httptest.NewRecorder()
@@ -322,7 +319,8 @@ func TestDeleteActivityGroup(t *testing.T) {
 	newActivityGroup := createRandomActivityGroupHandler(t)
 
 	t.Run("Deleted success", func(t *testing.T) {
-		request := httptest.NewRequest(http.MethodDelete, "http://localhost:3030/activity-groups/"+strconv.Itoa(newActivityGroup.ID), nil)
+		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		request := httptest.NewRequest(http.MethodDelete, "http://localhost:3030/activity-groups/"+id, nil)
 		request.Header.Add("Content-Type", "application/json")
 
 		recorder := httptest.NewRecorder()

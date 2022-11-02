@@ -153,5 +153,5 @@ func TestDeleteActivityGroup(t *testing.T) {
 
 	activityGroup, err := activityGroupRepository.FindOne(newActivityGroup.ID)
 	helper.ErrLogPanic(err)
-	assert.Equal(t, 0, activityGroup.ID)
+	assert.Equal(t, 0, int(activityGroup.ID))
 }

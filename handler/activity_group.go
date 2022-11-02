@@ -54,7 +54,7 @@ func (h *activityGroupHandler) GetOne(c *gin.Context) {
 	}
 
 	// Find by id
-	activityGroup, err := h.service.GetOne(int(id.ID))
+	activityGroup, err := h.service.GetOne(id.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -152,7 +152,7 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 	}
 
 	// Find by id
-	activityGroup, err := h.service.GetOne(int(id.ID))
+	activityGroup, err := h.service.GetOne(id.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -214,7 +214,7 @@ func (h *activityGroupHandler) Delete(c *gin.Context) {
 	}
 
 	// Find by id
-	activityGroup, err := h.service.GetOne(int(id.ID))
+	activityGroup, err := h.service.GetOne(id.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(

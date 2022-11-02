@@ -19,7 +19,7 @@ type ActivityGroupUpdateRequest struct {
 }
 
 type ActivityGroupCreateResponse struct {
-	ID        int        `json:"id"`
+	ID        int64      `json:"id"`
 	Title     string     `json:"title"`
 	Email     string     `json:"email"`
 	CreatedAt *time.Time `json:"created_at"`
@@ -27,7 +27,7 @@ type ActivityGroupCreateResponse struct {
 }
 
 type ActivityGroupGetOneResponse struct {
-	ID        int        `json:"id"`
+	ID        int64      `json:"id"`
 	Title     string     `json:"title"`
 	Email     string     `json:"email"`
 	CreatedAt *time.Time `json:"created_at"`

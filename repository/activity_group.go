@@ -8,7 +8,7 @@ import (
 type ActivityGroupRepository interface {
 	Save(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
 	FindAll() ([]domain.ActivityGroup, error)
-	FindOne(id int) (domain.ActivityGroup, error)
+	FindOne(id int64) (domain.ActivityGroup, error)
 	Update(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
 	Delete(activityGroup domain.ActivityGroup) (bool, error)
 }
@@ -32,7 +32,7 @@ func (r *activityGroupRepository) FindAll() ([]domain.ActivityGroup, error) {
 	return activityGroups, nil
 }
 
-func (r *activityGroupRepository) FindOne(id int) (domain.ActivityGroup, error) {
+func (r *activityGroupRepository) FindOne(id int64) (domain.ActivityGroup, error) {
 	var activityGroup domain.ActivityGroup
 
 	err := r.db.Where("id = ?", id).Find(&activityGroup).Error
