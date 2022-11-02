@@ -32,5 +32,16 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	activityGroup.PATCH("/:id", handlerActivityGroup.Update)
 	activityGroup.DELETE("/:id", handlerActivityGroup.Delete)
 
+	repositoryTodo := repository.NewRepositoryTodo(db)
+	serviceTodo := service.NewServiceTodo(repositoryTodo)
+	handlerTodo := handler.NewTodoHandler(serviceTodo)
+
+	// Route todo
+	todo := router.Group("/todo-items")
+	todo.GET("", handlerTodo.GetAll)
+	todo.GET("/:id", handlerTodo.GetOne)
+	todo.POST("", handlerTodo.Create)
+	todo.PATCH("/:id", handlerTodo.Update)
+	todo.DELETE("/:id", handlerTodo.Delete)
 	return router
 }

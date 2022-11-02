@@ -88,12 +88,11 @@ func (s *todoService) Update(id uint64, req web.TodoUpdateRequest) (domain.Todo,
 	if req.Title != "" {
 		todo.Title = req.Title
 	}
-
-	// Change field is active, if value req.IsActive is false
-	if req.IsActive {
-		todo.IsActive = true
-	} else {
+	// Change field is active, if value req.IsActive is true
+	if !req.IsActive {
 		todo.IsActive = req.IsActive
+	} else {
+		todo.IsActive = true
 
 	}
 
