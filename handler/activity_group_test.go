@@ -77,7 +77,7 @@ func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateRespo
 	assert.Equal(t, data.Email, contextData["email"])
 
 	newActivityGroup := web.ActivityGroupCreateResponse{
-		ID:    int64(contextData["id"].(float64)),
+		ID:    uint64(contextData["id"].(float64)),
 		Title: contextData["title"].(string),
 		Email: contextData["email"].(string),
 	}
@@ -186,7 +186,7 @@ func TestGetOneActivityGroup(t *testing.T) {
 		assert.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newActivityGroup.ID, int64(contextData["id"].(float64)))
+		assert.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
 		assert.Equal(t, newActivityGroup.Title, contextData["title"])
 		assert.Equal(t, newActivityGroup.Email, contextData["email"])
 
@@ -250,7 +250,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 		assert.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		assert.Equal(t, newActivityGroup.ID, int64(contextData["id"].(float64)))
+		assert.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
 		assert.Equal(t, newActivityGroup.Email, contextData["email"])
 
 		assert.NotEqual(t, newActivityGroup.UpdatedAt.String(), contextData["updated_at"])

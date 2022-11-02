@@ -7,7 +7,7 @@ import (
 )
 
 type ActivityGroupIdURI struct {
-	ID int64 `uri:"id" binding:"required"`
+	ID uint64 `uri:"id" binding:"required"`
 }
 type ActivityGroupRequest struct {
 	Title string `json:"title" binding:"required"`
@@ -19,7 +19,7 @@ type ActivityGroupUpdateRequest struct {
 }
 
 type ActivityGroupCreateResponse struct {
-	ID        int64      `json:"id"`
+	ID        uint64     `json:"id"`
 	Title     string     `json:"title"`
 	Email     string     `json:"email"`
 	CreatedAt *time.Time `json:"created_at"`
@@ -27,7 +27,7 @@ type ActivityGroupCreateResponse struct {
 }
 
 type ActivityGroupGetOneResponse struct {
-	ID        int64      `json:"id"`
+	ID        uint64     `json:"id"`
 	Title     string     `json:"title"`
 	Email     string     `json:"email"`
 	CreatedAt *time.Time `json:"created_at"`

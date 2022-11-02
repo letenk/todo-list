@@ -139,7 +139,6 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 
 	var req web.ActivityGroupUpdateRequest
 	err = c.ShouldBindJSON(&req)
-	fmt.Println(err)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
