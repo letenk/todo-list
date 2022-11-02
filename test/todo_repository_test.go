@@ -119,6 +119,8 @@ func TestFindByActivityGroupTodoRepository(t *testing.T) {
 		require.Equal(t, todos[0].IsActive, data.IsActive)
 		require.Equal(t, todos[0].Priority, data.Priority)
 
+		require.NotEmpty(t, data.CreatedAt)
+		require.NotEmpty(t, data.UpdatedAt)
 		require.Empty(t, data.DeletedAt)
 	}
 
