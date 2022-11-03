@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -15,9 +16,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomTodoHandler(t *testing.T) web.TodoCreateResponse {
+func createRandomTodoHandler(t *testing.T) web.TodoResponse {
 	newActivityGroup := createRandomActivityHandler(t)
-	data := web.TodoCreateResponse{
+	data := web.TodoResponse{
 		Title:      jabufaker.RandomString(20),
 		ActivityID: newActivityGroup.ID,
 	}
@@ -54,13 +55,14 @@ func createRandomTodoHandler(t *testing.T) web.TodoCreateResponse {
 	require.Equal(t, data.Title, contextData["title"])
 	require.Equal(t, data.ActivityID, uint64(contextData["activity_group_id"].(float64)))
 
-	require.Equal(t, "1", contextData["is_active"].(string))
+	require.Equal(t, true, contextData["is_active"])
 
-	newtodo := web.TodoCreateResponse{
+	isActiveString := strconv.FormatBool(contextData["is_active"].(bool))
+	newtodo := web.TodoResponse{
 		ID:         uint64(contextData["id"].(float64)),
 		Title:      contextData["title"].(string),
 		ActivityID: uint64(contextData["activity_group_id"].(float64)),
-		IsActive:   contextData["is_active"].(string),
+		IsActive:   isActiveString,
 		Priority:   contextData["priority"].(string),
 	}
 
@@ -76,7 +78,7 @@ func TestCreateTodoHandler(t *testing.T) {
 
 	t.Run("create new todo without title", func(t *testing.T) {
 		newActivityGroup := createRandomActivityHandler(t)
-		data := web.TodoCreateResponse{
+		data := web.TodoResponse{
 			ActivityID: newActivityGroup.ID,
 		}
 
@@ -104,7 +106,7 @@ func TestCreateTodoHandler(t *testing.T) {
 	})
 
 	t.Run("create new todo withoud activity group id", func(t *testing.T) {
-		data := web.TodoCreateResponse{
+		data := web.TodoResponse{
 			Title: jabufaker.RandomString(20),
 		}
 
@@ -135,10 +137,10 @@ func TestCreateTodoHandler(t *testing.T) {
 func TestGetAllTodoHandler(t *testing.T) {
 	t.Parallel()
 	var mutex sync.Mutex
-	var newTodos []web.TodoCreateResponse
+	var newTodos []web.TodoResponse
 
 	// Create channel for store new todos created
-	channel := make(chan web.TodoCreateResponse)
+	channel := make(chan web.TodoResponse)
 	defer close(channel)
 	// Create some random data
 	for i := 0; i < 10; i++ {
@@ -216,8 +218,16 @@ func TestGetAllTodoHandler(t *testing.T) {
 			list := data.(map[string]interface{})
 			require.Equal(t, newTodos[0].ID, uint64(list["id"].(float64)))
 			require.Equal(t, newTodos[0].Title, list["title"])
-			require.Equal(t, newTodos[0].IsActive, list["is_active"])
 			require.Equal(t, newTodos[0].Priority, list["priority"])
+
+			var isActive string
+			// If isActive is false
+			if newTodos[0].IsActive == "false" {
+				isActive = "0"
+			} else {
+				isActive = "1"
+			}
+			require.Equal(t, isActive, list["is_active"])
 
 			require.NotEmpty(t, list["created_at"])
 			require.NotEmpty(t, list["updated_at"])
@@ -231,10 +241,10 @@ func TestGetAllTodoHandler(t *testing.T) {
 func TestGetOneTodoHandler(t *testing.T) {
 	t.Parallel()
 	var mutex sync.Mutex
-	var newTodos []web.TodoCreateResponse
+	var newTodos []web.TodoResponse
 
 	// Create channel for store new todos created
-	channel := make(chan web.TodoCreateResponse)
+	channel := make(chan web.TodoResponse)
 	defer close(channel)
 	// Create some random data
 	for i := 0; i < 10; i++ {
@@ -271,7 +281,15 @@ func TestGetOneTodoHandler(t *testing.T) {
 
 		require.Equal(t, newTodos[0].ID, uint64(contextData["id"].(float64)))
 		require.Equal(t, newTodos[0].Title, contextData["title"])
-		require.Equal(t, newTodos[0].IsActive, contextData["is_active"])
+
+		var isActive string
+		// If isActive is false
+		if newTodos[0].IsActive == "false" {
+			isActive = "0"
+		} else {
+			isActive = "1"
+		}
+		require.Equal(t, isActive, contextData["is_active"])
 		require.Equal(t, newTodos[0].Priority, contextData["priority"])
 
 		require.NotEmpty(t, contextData["created_at"])
@@ -339,8 +357,16 @@ func TestUpdateTodo(t *testing.T) {
 		fmt.Println(contextData)
 		require.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
 		require.Equal(t, newTodo.ActivityID, uint64(contextData["activity_group_id"].(float64)))
-		require.Equal(t, newTodo.IsActive, contextData["is_active"])
 		require.Equal(t, newTodo.Priority, contextData["priority"])
+
+		var isActive string
+		// If isActive is false
+		if newTodo.IsActive == "false" {
+			isActive = "0"
+		} else {
+			isActive = "1"
+		}
+		require.Equal(t, isActive, contextData["is_active"])
 
 		require.NotEmpty(t, contextData["created_at"])
 

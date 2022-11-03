@@ -141,7 +141,7 @@ func (h *todoHandler) Create(c *gin.Context) {
 	jsonResponse := web.JSONResponse(
 		"Success",
 		"Success",
-		web.FormatTodo(newTodo),
+		web.FormatCreatedTodo(newTodo),
 	)
 	c.JSON(http.StatusCreated, jsonResponse)
 }
