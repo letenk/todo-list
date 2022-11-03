@@ -11,8 +11,8 @@ type TodoURI struct {
 }
 
 type TodoCreateRequest struct {
-	ActivityID uint64 `json:"activity_group_id" binding:"required"`
-	Title      string `json:"title" binding:"required"`
+	ActivityGroupID uint64 `json:"activity_group_id" binding:"required"`
+	Title           string `json:"title" binding:"required"`
 }
 
 type TodoUpdateRequest struct {
@@ -43,7 +43,7 @@ func FormatTodo(todo domain.Todo) TodoCreateResponse {
 	formatter := TodoCreateResponse{
 		ID:         todo.ID,
 		Title:      todo.Title,
-		ActivityID: todo.ActivityID,
+		ActivityID: todo.ActivityGroupID,
 		IsActive:   isActive,
 		Priority:   todo.Priority,
 		CreatedAt:  todo.CreatedAt,

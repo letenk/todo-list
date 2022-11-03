@@ -28,8 +28,8 @@ func NewServiceTodo(repository repository.TodoRepository) *todoService {
 
 func (s *todoService) Create(req web.TodoCreateRequest) (domain.Todo, error) {
 	todo := domain.Todo{
-		ActivityID: req.ActivityID,
-		Title:      req.Title,
+		ActivityGroupID: req.ActivityGroupID,
+		Title:           req.Title,
 	}
 
 	newTodo, err := s.repository.Save(todo)

@@ -36,7 +36,7 @@ func (r *todoRepository) FindAll() ([]domain.Todo, error) {
 func (r *todoRepository) FindByActivityID(ActivityID uint64) ([]domain.Todo, error) {
 	var todos []domain.Todo
 
-	err := r.db.Where("activity_id = ?", ActivityID).Find(&todos).Error
+	err := r.db.Where("activity_group_id = ?", ActivityID).Find(&todos).Error
 	if err != nil {
 		return todos, nil
 	}

@@ -103,7 +103,7 @@ func (h *todoHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if req.ActivityID == 0 {
+	if req.ActivityGroupID == 0 {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
 			"Bad Request",
