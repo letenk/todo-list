@@ -14,34 +14,34 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomActivityGroupService(t *testing.T) domain.ActivityGroup {
-	repository := repository.NewRepositoryActivityGroup(ConnTest)
-	service := service.NewServiceActivityGroup(repository)
+func createRandomActivityService(t *testing.T) domain.Activity {
+	repository := repository.NewRepositoryActivity(ConnTest)
+	service := service.NewServiceActivity(repository)
 
-	data := web.ActivityGroupRequest{
+	data := web.ActivityRequest{
 		Title: jabufaker.RandomString(20),
 		Email: jabufaker.RandomEmail(),
 	}
 
 	// Create
-	newActivityGroup, err := service.Create(data)
+	newActivity, err := service.Create(data)
 	helper.ErrLogPanic(err)
 
 	// Test pass
-	require.Equal(t, data.Title, newActivityGroup.Title)
-	require.Equal(t, data.Email, newActivityGroup.Email)
-	require.NotEmpty(t, newActivityGroup.ID)
-	require.NotEmpty(t, newActivityGroup.CreatedAt)
-	require.NotEmpty(t, newActivityGroup.UpdatedAt)
-	require.Nil(t, newActivityGroup.DeletedAt)
+	require.Equal(t, data.Title, newActivity.Title)
+	require.Equal(t, data.Email, newActivity.Email)
+	require.NotEmpty(t, newActivity.ID)
+	require.NotEmpty(t, newActivity.CreatedAt)
+	require.NotEmpty(t, newActivity.UpdatedAt)
+	require.Nil(t, newActivity.DeletedAt)
 
-	return newActivityGroup
+	return newActivity
 }
 
-func TestCreateActivityGroupServices(t *testing.T) {
+func TestCreateActivityServices(t *testing.T) {
 	defer DropTable()
 	t.Parallel()
-	createRandomActivityGroupService(t)
+	createRandomActivityService(t)
 }
 
 func TestGetAllServices(t *testing.T) {
@@ -51,21 +51,21 @@ func TestGetAllServices(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		go func() {
 			mutex.Lock()
-			createRandomActivityGroupService(t)
+			createRandomActivityService(t)
 			mutex.Unlock()
 		}()
 	}
 
 	t.Parallel()
 
-	repository := repository.NewRepositoryActivityGroup(ConnTest)
-	service := service.NewServiceActivityGroup(repository)
+	repository := repository.NewRepositoryActivity(ConnTest)
+	service := service.NewServiceActivity(repository)
 
 	// Get activity groups
-	activityGroups, err := service.GetAll()
+	Activitys, err := service.GetAll()
 	helper.ErrLogPanic(err)
 
-	for _, data := range activityGroups {
+	for _, data := range Activitys {
 		require.NotEmpty(t, data.ID)
 		require.NotEmpty(t, data.Title)
 		require.NotEmpty(t, data.Email)
@@ -79,50 +79,50 @@ func TestGetAllServices(t *testing.T) {
 func TestGetOneService(t *testing.T) {
 	defer DropTable()
 	// Create random data
-	newActivityGroup := createRandomActivityGroupService(t)
+	newActivity := createRandomActivityService(t)
 
 	t.Parallel()
-	repository := repository.NewRepositoryActivityGroup(ConnTest)
-	service := service.NewServiceActivityGroup(repository)
+	repository := repository.NewRepositoryActivity(ConnTest)
+	service := service.NewServiceActivity(repository)
 
 	// Find all
-	activityGroup, err := service.GetOne(newActivityGroup.ID)
+	Activity, err := service.GetOne(newActivity.ID)
 	helper.ErrLogPanic(err)
 
-	require.Equal(t, newActivityGroup.ID, activityGroup.ID)
-	require.Equal(t, newActivityGroup.Title, activityGroup.Title)
-	require.Equal(t, newActivityGroup.Email, activityGroup.Email)
-	require.NotEmpty(t, activityGroup.CreatedAt)
-	require.NotEmpty(t, activityGroup.UpdatedAt)
-	require.Nil(t, activityGroup.DeletedAt)
+	require.Equal(t, newActivity.ID, Activity.ID)
+	require.Equal(t, newActivity.Title, Activity.Title)
+	require.Equal(t, newActivity.Email, Activity.Email)
+	require.NotEmpty(t, Activity.CreatedAt)
+	require.NotEmpty(t, Activity.UpdatedAt)
+	require.Nil(t, Activity.DeletedAt)
 }
 
-func TestUpdateActivityGroupService(t *testing.T) {
+func TestUpdateActivityService(t *testing.T) {
 	defer DropTable()
 	// Create random data
-	newActivityGroup := createRandomActivityGroupService(t)
+	newActivity := createRandomActivityService(t)
 
 	t.Parallel()
-	repository := repository.NewRepositoryActivityGroup(ConnTest)
-	service := service.NewServiceActivityGroup(repository)
+	repository := repository.NewRepositoryActivity(ConnTest)
+	service := service.NewServiceActivity(repository)
 
-	dataUpdated := web.ActivityGroupUpdateRequest{
+	dataUpdated := web.ActivityUpdateRequest{
 		Title: jabufaker.RandomString(20),
 	}
 
 	t.Run("Update success", func(t *testing.T) {
 
-		updatedActivityGroup, err := service.Update(newActivityGroup.ID, dataUpdated)
+		updatedActivity, err := service.Update(newActivity.ID, dataUpdated)
 		helper.ErrLogPanic(err)
 
-		require.Equal(t, newActivityGroup.ID, updatedActivityGroup.ID)
-		require.Equal(t, newActivityGroup.Email, updatedActivityGroup.Email)
+		require.Equal(t, newActivity.ID, updatedActivity.ID)
+		require.Equal(t, newActivity.Email, updatedActivity.Email)
 
-		require.NotEqual(t, newActivityGroup.Title, updatedActivityGroup.Title)
-		require.NotEqual(t, newActivityGroup.UpdatedAt, updatedActivityGroup.UpdatedAt)
+		require.NotEqual(t, newActivity.Title, updatedActivity.Title)
+		require.NotEqual(t, newActivity.UpdatedAt, updatedActivity.UpdatedAt)
 
-		require.NotEmpty(t, updatedActivityGroup.CreatedAt)
-		require.Nil(t, updatedActivityGroup.DeletedAt)
+		require.NotEmpty(t, updatedActivity.CreatedAt)
+		require.Nil(t, updatedActivity.DeletedAt)
 
 	})
 
@@ -136,18 +136,18 @@ func TestUpdateActivityGroupService(t *testing.T) {
 	})
 }
 
-func TestDeleteActivityGroupService(t *testing.T) {
+func TestDeleteActivityService(t *testing.T) {
 	defer DropTable()
 	// Create random data
-	newActivityGroup := createRandomActivityGroupService(t)
+	newActivity := createRandomActivityService(t)
 
 	t.Parallel()
-	repository := repository.NewRepositoryActivityGroup(ConnTest)
-	service := service.NewServiceActivityGroup(repository)
+	repository := repository.NewRepositoryActivity(ConnTest)
+	service := service.NewServiceActivity(repository)
 
 	t.Run("Delete success", func(t *testing.T) {
 
-		ok, err := service.Delete(newActivityGroup.ID)
+		ok, err := service.Delete(newActivity.ID)
 		helper.ErrLogPanic(err)
 
 		require.True(t, ok)

@@ -8,7 +8,7 @@ import (
 type TodoRepository interface {
 	Save(todo domain.Todo) (domain.Todo, error)
 	FindAll() ([]domain.Todo, error)
-	FindByActivityGroupID(activityGroupID uint64) ([]domain.Todo, error)
+	FindByActivityID(ActivityID uint64) ([]domain.Todo, error)
 	FindOne(id uint64) (domain.Todo, error)
 	Update(todo domain.Todo) (domain.Todo, error)
 	Delete(todo domain.Todo) (bool, error)
@@ -33,10 +33,10 @@ func (r *todoRepository) FindAll() ([]domain.Todo, error) {
 	return todos, nil
 }
 
-func (r *todoRepository) FindByActivityGroupID(activityGroupID uint64) ([]domain.Todo, error) {
+func (r *todoRepository) FindByActivityID(ActivityID uint64) ([]domain.Todo, error) {
 	var todos []domain.Todo
 
-	err := r.db.Where("activity_group_id = ?", activityGroupID).Find(&todos).Error
+	err := r.db.Where("activity_id = ?", ActivityID).Find(&todos).Error
 	if err != nil {
 		return todos, nil
 	}

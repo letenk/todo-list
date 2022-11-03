@@ -5,64 +5,64 @@ import (
 	"gorm.io/gorm"
 )
 
-type ActivityGroupRepository interface {
-	Save(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
-	FindAll() ([]domain.ActivityGroup, error)
-	FindOne(id uint64) (domain.ActivityGroup, error)
-	Update(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error)
-	Delete(activityGroup domain.ActivityGroup) (bool, error)
+type ActivityRepository interface {
+	Save(Activity domain.Activity) (domain.Activity, error)
+	FindAll() ([]domain.Activity, error)
+	FindOne(id uint64) (domain.Activity, error)
+	Update(Activity domain.Activity) (domain.Activity, error)
+	Delete(Activity domain.Activity) (bool, error)
 }
 
-type activityGroupRepository struct {
+type activityRepository struct {
 	db *gorm.DB
 }
 
-func NewRepositoryActivityGroup(db *gorm.DB) *activityGroupRepository {
-	return &activityGroupRepository{db}
+func NewRepositoryActivity(db *gorm.DB) *activityRepository {
+	return &activityRepository{db}
 }
 
-func (r *activityGroupRepository) FindAll() ([]domain.ActivityGroup, error) {
-	var activityGroups []domain.ActivityGroup
+func (r *activityRepository) FindAll() ([]domain.Activity, error) {
+	var Activitys []domain.Activity
 
-	err := r.db.Find(&activityGroups).Error
+	err := r.db.Find(&Activitys).Error
 	if err != nil {
-		return activityGroups, nil
+		return Activitys, nil
 	}
 
-	return activityGroups, nil
+	return Activitys, nil
 }
 
-func (r *activityGroupRepository) FindOne(id uint64) (domain.ActivityGroup, error) {
-	var activityGroup domain.ActivityGroup
+func (r *activityRepository) FindOne(id uint64) (domain.Activity, error) {
+	var Activity domain.Activity
 
-	err := r.db.Where("id = ?", id).Find(&activityGroup).Error
+	err := r.db.Where("id = ?", id).Find(&Activity).Error
 	if err != nil {
-		return activityGroup, nil
+		return Activity, nil
 	}
 
-	return activityGroup, nil
+	return Activity, nil
 }
 
-func (r *activityGroupRepository) Save(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error) {
-	err := r.db.Create(&activityGroup).Error
+func (r *activityRepository) Save(Activity domain.Activity) (domain.Activity, error) {
+	err := r.db.Create(&Activity).Error
 	if err != nil {
-		return activityGroup, err
+		return Activity, err
 	}
 
-	return activityGroup, nil
+	return Activity, nil
 }
 
-func (r *activityGroupRepository) Update(activityGroup domain.ActivityGroup) (domain.ActivityGroup, error) {
-	err := r.db.Save(&activityGroup).Error
+func (r *activityRepository) Update(Activity domain.Activity) (domain.Activity, error) {
+	err := r.db.Save(&Activity).Error
 	if err != nil {
-		return activityGroup, err
+		return Activity, err
 	}
 
-	return activityGroup, nil
+	return Activity, nil
 }
 
-func (r *activityGroupRepository) Delete(activityGroup domain.ActivityGroup) (bool, error) {
-	err := r.db.Delete(&activityGroup).Error
+func (r *activityRepository) Delete(Activity domain.Activity) (bool, error) {
+	err := r.db.Delete(&Activity).Error
 	if err != nil {
 		return false, err
 	}

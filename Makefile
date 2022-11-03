@@ -1,3 +1,7 @@
+TODO_LIST_BINARY=todoListApp
+IMAGE_NAME=todolist
+IMAGE_TAG=latest
+
 # run: as running app
 run:
 	go run main.go
@@ -28,3 +32,14 @@ test_cover_nocache:
 	@echo "All tests are running..."
 	go test ./... -v -cover
 	@echo "Test finished"
+
+# build: build app todo-list to binary file
+build:
+	@echo "Building binary todo list.."
+	env GOOS=linux CGO_ENABLED=0 go build -o ${TODO_LIST_BINARY} ./
+	@echo "Done!"
+	@echo "Stopping docker images (if running...)"
+	docker-compose down
+	@echo "Building (when required) and starting docker images..."
+	docker-compose up --build -d
+	@echo "Docker images built and started!"

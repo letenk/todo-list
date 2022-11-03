@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type ActivityGroup struct {
+type Activity struct {
 	ID        uint64     `gorm:"primary_key"`
 	Email     string     `gorm:"type:varchar(191);not null;unique"`
 	Title     string     `gorm:"type:varchar(191);not null"`

@@ -19,10 +19,10 @@ func NewTodoHandler(service service.TodoService) *todoHandler {
 }
 
 func (h *todoHandler) GetAll(c *gin.Context) {
-	activityGroupID, _ := strconv.Atoi(c.Query("activity_group_id"))
+	ActivityID, _ := strconv.Atoi(c.Query("activity_group_id"))
 
 	// Get all
-	todos, err := h.service.GetAll(uint64(activityGroupID))
+	todos, err := h.service.GetAll(uint64(ActivityID))
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -103,7 +103,7 @@ func (h *todoHandler) Create(c *gin.Context) {
 		return
 	}
 
-	if req.ActivityGroupId == 0 {
+	if req.ActivityID == 0 {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
 			"Bad Request",
@@ -225,7 +225,7 @@ func (h *todoHandler) Update(c *gin.Context) {
 }
 
 func (h *todoHandler) Delete(c *gin.Context) {
-	var todoURI web.ActivityGroupIdURI
+	var todoURI web.ActivityIdURI
 	err := c.ShouldBindUri(&todoURI)
 	if err != nil {
 		resp := gin.H{}

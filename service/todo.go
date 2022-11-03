@@ -12,7 +12,7 @@ import (
 
 type TodoService interface {
 	Create(req web.TodoCreateRequest) (domain.Todo, error)
-	GetAll(activityGroupID uint64) ([]domain.Todo, error)
+	GetAll(ActivityID uint64) ([]domain.Todo, error)
 	GetOne(id uint64) (domain.Todo, error)
 	Update(id uint64, req web.TodoUpdateRequest) (domain.Todo, error)
 	Delete(id uint64) (bool, error)
@@ -28,8 +28,8 @@ func NewServiceTodo(repository repository.TodoRepository) *todoService {
 
 func (s *todoService) Create(req web.TodoCreateRequest) (domain.Todo, error) {
 	todo := domain.Todo{
-		ActivityGroupID: req.ActivityGroupId,
-		Title:           req.Title,
+		ActivityID: req.ActivityID,
+		Title:      req.Title,
 	}
 
 	newTodo, err := s.repository.Save(todo)
@@ -40,10 +40,10 @@ func (s *todoService) Create(req web.TodoCreateRequest) (domain.Todo, error) {
 	return newTodo, err
 }
 
-func (s *todoService) GetAll(activityGroupID uint64) ([]domain.Todo, error) {
-	if activityGroupID != 0 {
+func (s *todoService) GetAll(ActivityID uint64) ([]domain.Todo, error) {
+	if ActivityID != 0 {
 		// Find by activity group id
-		todos, err := s.repository.FindByActivityGroupID(activityGroupID)
+		todos, err := s.repository.FindByActivityID(ActivityID)
 		if err != nil {
 			return todos, err
 		}

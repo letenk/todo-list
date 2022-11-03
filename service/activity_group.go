@@ -10,91 +10,91 @@ import (
 	"github.com/letenk/todo-list/repository"
 )
 
-type ActivityGroupService interface {
-	Create(req web.ActivityGroupRequest) (domain.ActivityGroup, error)
-	GetAll() ([]domain.ActivityGroup, error)
-	GetOne(id uint64) (domain.ActivityGroup, error)
-	Update(id uint64, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error)
+type ActivityService interface {
+	Create(req web.ActivityRequest) (domain.Activity, error)
+	GetAll() ([]domain.Activity, error)
+	GetOne(id uint64) (domain.Activity, error)
+	Update(id uint64, req web.ActivityUpdateRequest) (domain.Activity, error)
 	Delete(id uint64) (bool, error)
 }
 
-type activityGroupService struct {
-	repository repository.ActivityGroupRepository
+type activityService struct {
+	repository repository.ActivityRepository
 }
 
-func NewServiceActivityGroup(repository repository.ActivityGroupRepository) *activityGroupService {
-	return &activityGroupService{repository}
+func NewServiceActivity(repository repository.ActivityRepository) *activityService {
+	return &activityService{repository}
 }
 
-func (s *activityGroupService) GetAll() ([]domain.ActivityGroup, error) {
+func (s *activityService) GetAll() ([]domain.Activity, error) {
 	// Find all
-	activityGroups, err := s.repository.FindAll()
+	Activitys, err := s.repository.FindAll()
 
 	if err != nil {
-		return activityGroups, err
+		return Activitys, err
 	}
 
-	return activityGroups, nil
+	return Activitys, nil
 }
 
-func (s *activityGroupService) GetOne(id uint64) (domain.ActivityGroup, error) {
+func (s *activityService) GetOne(id uint64) (domain.Activity, error) {
 	// Find one
-	activityGroup, err := s.repository.FindOne(id)
+	Activity, err := s.repository.FindOne(id)
 
 	if err != nil {
-		return activityGroup, err
+		return Activity, err
 	}
 
-	return activityGroup, nil
+	return Activity, nil
 }
 
-func (s *activityGroupService) Create(req web.ActivityGroupRequest) (domain.ActivityGroup, error) {
-	activityGroup := domain.ActivityGroup{
+func (s *activityService) Create(req web.ActivityRequest) (domain.Activity, error) {
+	Activity := domain.Activity{
 		Title: req.Title,
 		Email: req.Email,
 	}
 
 	// Save
-	newActivityGroup, err := s.repository.Save(activityGroup)
+	newActivity, err := s.repository.Save(Activity)
 	if err != nil {
-		return newActivityGroup, err
+		return newActivity, err
 	}
 
-	return newActivityGroup, nil
+	return newActivity, nil
 }
 
-func (s *activityGroupService) Update(id uint64, req web.ActivityGroupUpdateRequest) (domain.ActivityGroup, error) {
+func (s *activityService) Update(id uint64, req web.ActivityUpdateRequest) (domain.Activity, error) {
 	// Find one
-	activityGroup, err := s.repository.FindOne(id)
+	Activity, err := s.repository.FindOne(id)
 	// If activity group not found
-	if activityGroup.ID == 0 {
+	if Activity.ID == 0 {
 		message := fmt.Sprintf("Activity with ID %d Not Found", id)
-		return activityGroup, errors.New(message)
+		return Activity, errors.New(message)
 	}
 
 	if err != nil {
-		return activityGroup, err
+		return Activity, err
 	}
 
 	// Change field title to req update title
-	activityGroup.Title = req.Title
+	Activity.Title = req.Title
 	// Change time field updatUpdatedAted
-	activityGroup.UpdatedAt = time.Now()
+	Activity.UpdatedAt = time.Now()
 
 	// Update
-	updatedActivityGroup, err := s.repository.Update(activityGroup)
+	updatedActivity, err := s.repository.Update(Activity)
 	if err != nil {
-		return activityGroup, err
+		return Activity, err
 	}
 
-	return updatedActivityGroup, nil
+	return updatedActivity, nil
 }
 
-func (s *activityGroupService) Delete(id uint64) (bool, error) {
+func (s *activityService) Delete(id uint64) (bool, error) {
 	// Find one
-	activityGroup, err := s.repository.FindOne(id)
+	Activity, err := s.repository.FindOne(id)
 	// If activity group not found
-	if activityGroup.ID == 0 {
+	if Activity.ID == 0 {
 		message := fmt.Sprintf("Activity with ID %d Not Found", id)
 		return false, errors.New(message)
 	}
@@ -103,7 +103,7 @@ func (s *activityGroupService) Delete(id uint64) (bool, error) {
 		return false, err
 	}
 
-	ok, err := s.repository.Delete(activityGroup)
+	ok, err := s.repository.Delete(Activity)
 	if err != nil {
 		return false, err
 	}

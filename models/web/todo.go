@@ -11,8 +11,8 @@ type TodoURI struct {
 }
 
 type TodoCreateRequest struct {
-	ActivityGroupId uint64 `json:"activity_group_id" binding:"required"`
-	Title           string `json:"title" binding:"required"`
+	ActivityID uint64 `json:"activity_group_id" binding:"required"`
+	Title      string `json:"title" binding:"required"`
 }
 
 type TodoUpdateRequest struct {
@@ -20,14 +20,14 @@ type TodoUpdateRequest struct {
 	IsActive bool   `json:"is_active"`
 }
 type TodoCreateResponse struct {
-	ID              uint64     `json:"id"`
-	Title           string     `json:"title"`
-	ActivityGroupID uint64     `json:"activity_group_id"`
-	IsActive        string     `json:"is_active"`
-	Priority        string     `json:"priority"`
-	CreatedAt       *time.Time `json:"created_at"`
-	UpdatedAt       time.Time  `json:"updated_at"`
-	DeletetAt       *time.Time `json:"deleted_at"`
+	ID         uint64     `json:"id"`
+	Title      string     `json:"title"`
+	ActivityID uint64     `json:"activity_group_id"`
+	IsActive   string     `json:"is_active"`
+	Priority   string     `json:"priority"`
+	CreatedAt  *time.Time `json:"created_at"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+	DeletetAt  *time.Time `json:"deleted_at"`
 }
 
 // Format for handle single response todo
@@ -41,14 +41,14 @@ func FormatTodo(todo domain.Todo) TodoCreateResponse {
 	}
 
 	formatter := TodoCreateResponse{
-		ID:              todo.ID,
-		Title:           todo.Title,
-		ActivityGroupID: todo.ActivityGroupID,
-		IsActive:        isActive,
-		Priority:        todo.Priority,
-		CreatedAt:       todo.CreatedAt,
-		UpdatedAt:       todo.UpdatedAt,
-		DeletetAt:       todo.DeletedAt,
+		ID:         todo.ID,
+		Title:      todo.Title,
+		ActivityID: todo.ActivityID,
+		IsActive:   isActive,
+		Priority:   todo.Priority,
+		CreatedAt:  todo.CreatedAt,
+		UpdatedAt:  todo.UpdatedAt,
+		DeletetAt:  todo.DeletedAt,
 	}
 	return formatter
 }

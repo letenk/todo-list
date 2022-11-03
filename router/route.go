@@ -20,17 +20,17 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		MaxAge:           300,
 	}))
 
-	repositoryActivityGroup := repository.NewRepositoryActivityGroup(db)
-	serviceActivityGroup := service.NewServiceActivityGroup(repositoryActivityGroup)
-	handlerActivityGroup := handler.NewActivityGroupHandler(serviceActivityGroup)
+	repositoryActivity := repository.NewRepositoryActivity(db)
+	serviceActivity := service.NewServiceActivity(repositoryActivity)
+	handlerActivity := handler.NewActivityHandler(serviceActivity)
 
 	// Route activity groups
-	activityGroup := router.Group("/activity-groups")
-	activityGroup.GET("", handlerActivityGroup.GetAll)
-	activityGroup.GET("/:id", handlerActivityGroup.GetOne)
-	activityGroup.POST("", handlerActivityGroup.Create)
-	activityGroup.PATCH("/:id", handlerActivityGroup.Update)
-	activityGroup.DELETE("/:id", handlerActivityGroup.Delete)
+	Activity := router.Group("/activity-groups")
+	Activity.GET("", handlerActivity.GetAll)
+	Activity.GET("/:id", handlerActivity.GetOne)
+	Activity.POST("", handlerActivity.Create)
+	Activity.PATCH("/:id", handlerActivity.Update)
+	Activity.DELETE("/:id", handlerActivity.Delete)
 
 	repositoryTodo := repository.NewRepositoryTodo(db)
 	serviceTodo := service.NewServiceTodo(repositoryTodo)

@@ -15,13 +15,13 @@ import (
 func createRandomTodoRepository(t *testing.T) domain.Todo {
 	todoRepository := repository.NewRepositoryTodo(ConnTest)
 
-	newActivityGroup := createRandomActivityGroupRepository(t)
+	newActivity := createRandomActivityRepository(t)
 
 	todo := domain.Todo{
-		ActivityGroupID: newActivityGroup.ID,
-		Title:           jabufaker.RandomString(20),
-		IsActive:        true,
-		Priority:        helper.RandomPriority(),
+		ActivityID: newActivity.ID,
+		Title:      jabufaker.RandomString(20),
+		IsActive:   true,
+		Priority:   helper.RandomPriority(),
 	}
 
 	// Save to db
@@ -32,11 +32,11 @@ func createRandomTodoRepository(t *testing.T) domain.Todo {
 	require.NoError(t, err)
 
 	require.NotEmpty(t, newTodo.ID)
-	require.NotEmpty(t, newActivityGroup.CreatedAt)
-	require.NotEmpty(t, newActivityGroup.UpdatedAt)
-	require.Empty(t, newActivityGroup.DeletedAt)
+	require.NotEmpty(t, newActivity.CreatedAt)
+	require.NotEmpty(t, newActivity.UpdatedAt)
+	require.Empty(t, newActivity.DeletedAt)
 
-	require.Equal(t, todo.ActivityGroupID, newTodo.ActivityGroupID)
+	require.Equal(t, todo.ActivityID, newTodo.ActivityID)
 	require.Equal(t, todo.Title, newTodo.Title)
 	require.Equal(t, todo.IsActive, newTodo.IsActive)
 	require.Equal(t, todo.Priority, newTodo.Priority)
@@ -68,7 +68,7 @@ func TestFindAllTodoRepository(t *testing.T) {
 	for _, data := range todos {
 		require.NotEmpty(t, data.ID)
 		require.NotEmpty(t, data.Title)
-		require.NotEmpty(t, data.ActivityGroupID)
+		require.NotEmpty(t, data.ActivityID)
 		require.NotEmpty(t, data.Priority)
 		require.NotEmpty(t, data.CreatedAt)
 		require.NotEmpty(t, data.UpdatedAt)
@@ -80,7 +80,7 @@ func TestFindAllTodoRepository(t *testing.T) {
 
 }
 
-func TestFindByActivityGroupTodoRepository(t *testing.T) {
+func TestFindByActivityTodoRepository(t *testing.T) {
 	t.Parallel()
 	var mutex sync.Mutex
 	// todos for store `new data todos` from channel
@@ -104,7 +104,7 @@ func TestFindByActivityGroupTodoRepository(t *testing.T) {
 	todoRepository := repository.NewRepositoryTodo(ConnTest)
 
 	// Find by actiivity group
-	todos, err := todoRepository.FindByActivityGroupID(todos[0].ActivityGroupID)
+	todos, err := todoRepository.FindByActivityID(todos[0].ActivityID)
 	helper.ErrLogPanic(err)
 
 	require.NoError(t, err)
@@ -114,7 +114,7 @@ func TestFindByActivityGroupTodoRepository(t *testing.T) {
 		// Equal
 		require.Equal(t, todos[0].ID, data.ID)
 		require.Equal(t, todos[0].Title, data.Title)
-		require.Equal(t, todos[0].ActivityGroupID, data.ActivityGroupID)
+		require.Equal(t, todos[0].ActivityID, data.ActivityID)
 		require.Equal(t, todos[0].IsActive, data.IsActive)
 		require.Equal(t, todos[0].Priority, data.Priority)
 
@@ -140,7 +140,7 @@ func TestFindOneTodoRepository(t *testing.T) {
 	// Equal
 	require.Equal(t, todo.ID, newTodo.ID)
 	require.Equal(t, todo.Title, newTodo.Title)
-	require.Equal(t, todo.ActivityGroupID, newTodo.ActivityGroupID)
+	require.Equal(t, todo.ActivityID, newTodo.ActivityID)
 	require.Equal(t, todo.IsActive, newTodo.IsActive)
 	require.Equal(t, todo.Priority, newTodo.Priority)
 
@@ -179,14 +179,14 @@ func TestUpdateTodoRepository(t *testing.T) {
 	todoRepository := repository.NewRepositoryTodo(ConnTest)
 
 	dataUpdate := domain.Todo{
-		ID:              todos[0].ID,
-		ActivityGroupID: todos[1].ActivityGroupID,
-		Title:           jabufaker.RandomString(20),
-		IsActive:        false,
-		Priority:        helper.RandomPriority(),
-		CreatedAt:       todos[0].CreatedAt,
-		UpdatedAt:       time.Now(),
-		DeletedAt:       nil,
+		ID:         todos[0].ID,
+		ActivityID: todos[1].ActivityID,
+		Title:      jabufaker.RandomString(20),
+		IsActive:   false,
+		Priority:   helper.RandomPriority(),
+		CreatedAt:  todos[0].CreatedAt,
+		UpdatedAt:  time.Now(),
+		DeletedAt:  nil,
 	}
 
 	// Update
@@ -199,7 +199,7 @@ func TestUpdateTodoRepository(t *testing.T) {
 	require.Equal(t, todo.ID, todos[0].ID)
 
 	require.NotEqual(t, todo.Title, todos[0].Title)
-	require.NotEqual(t, todo.ActivityGroupID, todos[0].ActivityGroupID)
+	require.NotEqual(t, todo.ActivityID, todos[0].ActivityID)
 	require.NotEqual(t, todo.IsActive, todos[0].IsActive)
 	require.NotEqual(t, todo.Priority, todos[0].Priority)
 

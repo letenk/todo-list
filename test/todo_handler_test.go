@@ -16,13 +16,13 @@ import (
 )
 
 func createRandomTodoHandler(t *testing.T) web.TodoCreateResponse {
-	newActivityGroup := createRandomActivityGroupHandler(t)
+	newActivityGroup := createRandomActivityHandler(t)
 	data := web.TodoCreateResponse{
-		Title:           jabufaker.RandomString(20),
-		ActivityGroupID: newActivityGroup.ID,
+		Title:      jabufaker.RandomString(20),
+		ActivityID: newActivityGroup.ID,
 	}
 
-	dataBody := fmt.Sprintf(`{"title": "%s", "activity_group_id": %d}`, data.Title, data.ActivityGroupID)
+	dataBody := fmt.Sprintf(`{"title": "%s", "activity_group_id": %d}`, data.Title, data.ActivityID)
 	requestBody := strings.NewReader(dataBody)
 
 	request := httptest.NewRequest(http.MethodPost, "http://localhost:3030/todo-items", requestBody)
@@ -52,16 +52,16 @@ func createRandomTodoHandler(t *testing.T) web.TodoCreateResponse {
 
 	require.Equal(t, "very-high", contextData["priority"])
 	require.Equal(t, data.Title, contextData["title"])
-	require.Equal(t, data.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
+	require.Equal(t, data.ActivityID, uint64(contextData["activity_group_id"].(float64)))
 
 	require.Equal(t, "1", contextData["is_active"].(string))
 
 	newtodo := web.TodoCreateResponse{
-		ID:              uint64(contextData["id"].(float64)),
-		Title:           contextData["title"].(string),
-		ActivityGroupID: uint64(contextData["activity_group_id"].(float64)),
-		IsActive:        contextData["is_active"].(string),
-		Priority:        contextData["priority"].(string),
+		ID:         uint64(contextData["id"].(float64)),
+		Title:      contextData["title"].(string),
+		ActivityID: uint64(contextData["activity_group_id"].(float64)),
+		IsActive:   contextData["is_active"].(string),
+		Priority:   contextData["priority"].(string),
 	}
 
 	return newtodo
@@ -75,12 +75,12 @@ func TestCreateTodoHandler(t *testing.T) {
 	})
 
 	t.Run("create new todo without title", func(t *testing.T) {
-		newActivityGroup := createRandomActivityGroupHandler(t)
+		newActivityGroup := createRandomActivityHandler(t)
 		data := web.TodoCreateResponse{
-			ActivityGroupID: newActivityGroup.ID,
+			ActivityID: newActivityGroup.ID,
 		}
 
-		dataBody := fmt.Sprintf(`{"activity_group_id": "%d"}`, data.ActivityGroupID)
+		dataBody := fmt.Sprintf(`{"activity_group_id": "%d"}`, data.ActivityID)
 		requestBody := strings.NewReader(dataBody)
 
 		request := httptest.NewRequest(http.MethodPost, "http://localhost:3030/todo-items", requestBody)
@@ -188,8 +188,8 @@ func TestGetAllTodoHandler(t *testing.T) {
 	})
 
 	t.Run("Get all todo with query activity group id", func(t *testing.T) {
-		activityGroupID := fmt.Sprintf("%d", newTodos[0].ActivityGroupID)
-		request := httptest.NewRequest(http.MethodGet, "http://localhost:3030/todo-items?activity_group_id="+activityGroupID, nil)
+		ActivityID := fmt.Sprintf("%d", newTodos[0].ActivityID)
+		request := httptest.NewRequest(http.MethodGet, "http://localhost:3030/todo-items?activity_group_id="+ActivityID, nil)
 		request.Header.Add("Content-Type", "application/json")
 
 		recorder := httptest.NewRecorder()
@@ -338,7 +338,7 @@ func TestUpdateTodo(t *testing.T) {
 		var contextData = responseBody["data"].(map[string]interface{})
 		fmt.Println(contextData)
 		require.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
-		require.Equal(t, newTodo.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
+		require.Equal(t, newTodo.ActivityID, uint64(contextData["activity_group_id"].(float64)))
 		require.Equal(t, newTodo.IsActive, contextData["is_active"])
 		require.Equal(t, newTodo.Priority, contextData["priority"])
 
@@ -380,7 +380,7 @@ func TestUpdateTodo(t *testing.T) {
 
 		var contextData = responseBody["data"].(map[string]interface{})
 		require.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
-		require.Equal(t, newTodo.ActivityGroupID, uint64(contextData["activity_group_id"].(float64)))
+		require.Equal(t, newTodo.ActivityID, uint64(contextData["activity_group_id"].(float64)))
 		require.Equal(t, newTodo.Title, contextData["title"])
 		require.Equal(t, newTodo.Priority, contextData["priority"])
 
@@ -394,7 +394,7 @@ func TestUpdateTodo(t *testing.T) {
 	})
 
 	t.Run("Id not found", func(t *testing.T) {
-		data := web.ActivityGroupUpdateRequest{
+		data := web.ActivityUpdateRequest{
 			Title: jabufaker.RandomString(20),
 		}
 

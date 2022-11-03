@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  todolist:
+    build:
+      context: .
+      dockerfile: .
+    restart: always
+    ports:
+      - "8090:3030"
+    environment:
+      DSN: "root:root@tcp(127.0.0.1:3306)/todo4?charset=utf8mb4&parseTime=True&loc=Local"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "root"
+      MYSQL_HOST: "127.0.0.1"
+      MYSQL_PORT: "3306"
+      MYSQL_DBNAME: "todo4"

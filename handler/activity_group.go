@@ -10,22 +10,22 @@ import (
 	"github.com/letenk/todo-list/service"
 )
 
-type activityGroupHandler struct {
-	service service.ActivityGroupService
+type ActivityHandler struct {
+	service service.ActivityService
 }
 
-func NewActivityGroupHandler(service service.ActivityGroupService) *activityGroupHandler {
-	return &activityGroupHandler{service}
+func NewActivityHandler(service service.ActivityService) *ActivityHandler {
+	return &ActivityHandler{service}
 }
 
-func (h *activityGroupHandler) GetAll(c *gin.Context) {
+func (h *ActivityHandler) GetAll(c *gin.Context) {
 	// Get all
-	activityGroup, err := h.service.GetAll()
+	Activity, err := h.service.GetAll()
 	if err != nil {
 		jsonResponse := web.JSONResponse(
 			"Internal Server Error",
 			"Internal Server Error",
-			domain.ActivityGroup{},
+			domain.Activity{},
 		)
 		c.JSON(http.StatusInternalServerError, jsonResponse)
 		return
@@ -34,13 +34,13 @@ func (h *activityGroupHandler) GetAll(c *gin.Context) {
 	jsonResponse := web.JSONResponse(
 		"Success",
 		"Success",
-		web.FormatActivitiesGroup(activityGroup),
+		web.FormatActivitiesGroup(Activity),
 	)
 	c.JSON(http.StatusOK, jsonResponse)
 }
 
-func (h *activityGroupHandler) GetOne(c *gin.Context) {
-	var id web.ActivityGroupIdURI
+func (h *ActivityHandler) GetOne(c *gin.Context) {
+	var id web.ActivityIdURI
 	err := c.ShouldBindUri(&id)
 	if err != nil {
 		resp := gin.H{}
@@ -54,7 +54,7 @@ func (h *activityGroupHandler) GetOne(c *gin.Context) {
 	}
 
 	// Find by id
-	activityGroup, err := h.service.GetOne(id.ID)
+	Activity, err := h.service.GetOne(id.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -67,7 +67,7 @@ func (h *activityGroupHandler) GetOne(c *gin.Context) {
 	}
 
 	// If not found
-	if activityGroup.ID == 0 {
+	if Activity.ID == 0 {
 		resp := gin.H{}
 		message := fmt.Sprintf("Activity with ID %d Not Found", id.ID)
 		jsonResponse := web.JSONResponse(
@@ -82,14 +82,14 @@ func (h *activityGroupHandler) GetOne(c *gin.Context) {
 	jsonResponse := web.JSONResponse(
 		"Success",
 		"Success",
-		web.FormatActivityGroupGetOne(activityGroup),
+		web.FormatActivityGetOne(Activity),
 	)
 	c.JSON(http.StatusOK, jsonResponse)
 
 }
 
-func (h *activityGroupHandler) Create(c *gin.Context) {
-	var req web.ActivityGroupRequest
+func (h *ActivityHandler) Create(c *gin.Context) {
+	var req web.ActivityRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
 		resp := gin.H{}
@@ -103,7 +103,7 @@ func (h *activityGroupHandler) Create(c *gin.Context) {
 	}
 
 	// Create
-	newActivityGroup, err := h.service.Create(req)
+	newActivity, err := h.service.Create(req)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -118,13 +118,13 @@ func (h *activityGroupHandler) Create(c *gin.Context) {
 	jsonResponse := web.JSONResponse(
 		"Success",
 		"Success",
-		web.FormatActivityGroup(newActivityGroup),
+		web.FormatActivity(newActivity),
 	)
 	c.JSON(http.StatusCreated, jsonResponse)
 }
 
-func (h *activityGroupHandler) Update(c *gin.Context) {
-	var id web.ActivityGroupIdURI
+func (h *ActivityHandler) Update(c *gin.Context) {
+	var id web.ActivityIdURI
 	err := c.ShouldBindUri(&id)
 	if err != nil {
 		resp := gin.H{}
@@ -137,7 +137,7 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var req web.ActivityGroupUpdateRequest
+	var req web.ActivityUpdateRequest
 	err = c.ShouldBindJSON(&req)
 	if err != nil {
 		resp := gin.H{}
@@ -151,7 +151,7 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 	}
 
 	// Find by id
-	activityGroup, err := h.service.GetOne(id.ID)
+	Activity, err := h.service.GetOne(id.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -164,7 +164,7 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 	}
 
 	// If not found
-	if activityGroup.ID == 0 {
+	if Activity.ID == 0 {
 		resp := gin.H{}
 		message := fmt.Sprintf("Activity with ID %d Not Found", id.ID)
 		jsonResponse := web.JSONResponse(
@@ -177,7 +177,7 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 	}
 
 	// Update
-	updatedActivityGroup, err := h.service.Update(activityGroup.ID, req)
+	updatedActivity, err := h.service.Update(Activity.ID, req)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -192,14 +192,14 @@ func (h *activityGroupHandler) Update(c *gin.Context) {
 	jsonResponse := web.JSONResponse(
 		"Success",
 		"Success",
-		web.FormatActivityGroupGetOne(updatedActivityGroup),
+		web.FormatActivityGetOne(updatedActivity),
 	)
 	c.JSON(http.StatusOK, jsonResponse)
 
 }
 
-func (h *activityGroupHandler) Delete(c *gin.Context) {
-	var id web.ActivityGroupIdURI
+func (h *ActivityHandler) Delete(c *gin.Context) {
+	var id web.ActivityIdURI
 	err := c.ShouldBindUri(&id)
 	if err != nil {
 		resp := gin.H{}
@@ -213,7 +213,7 @@ func (h *activityGroupHandler) Delete(c *gin.Context) {
 	}
 
 	// Find by id
-	activityGroup, err := h.service.GetOne(id.ID)
+	Activity, err := h.service.GetOne(id.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(
@@ -226,7 +226,7 @@ func (h *activityGroupHandler) Delete(c *gin.Context) {
 	}
 
 	// If not found
-	if activityGroup.ID == 0 {
+	if Activity.ID == 0 {
 		resp := gin.H{}
 		message := fmt.Sprintf("Activity with ID %d Not Found", id.ID)
 		jsonResponse := web.JSONResponse(
@@ -239,7 +239,7 @@ func (h *activityGroupHandler) Delete(c *gin.Context) {
 	}
 
 	// Delete
-	_, err = h.service.Delete(activityGroup.ID)
+	_, err = h.service.Delete(Activity.ID)
 	if err != nil {
 		resp := gin.H{}
 		jsonResponse := web.JSONResponse(

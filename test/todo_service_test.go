@@ -18,11 +18,11 @@ func createRandomTodoService(t *testing.T) domain.Todo {
 	repository := repository.NewRepositoryTodo(ConnTest)
 	service := service.NewServiceTodo(repository)
 
-	newActivityGroup := createRandomActivityGroupRepository(t)
+	newActivity := createRandomActivityRepository(t)
 
 	data := web.TodoCreateRequest{
-		ActivityGroupId: newActivityGroup.ID,
-		Title:           jabufaker.RandomString(20),
+		ActivityID: newActivity.ID,
+		Title:      jabufaker.RandomString(20),
 	}
 
 	// Create
@@ -32,7 +32,7 @@ func createRandomTodoService(t *testing.T) domain.Todo {
 	// Test
 	require.NoError(t, err)
 
-	require.Equal(t, data.ActivityGroupId, newTodo.ActivityGroupID)
+	require.Equal(t, data.ActivityID, newTodo.ActivityID)
 	require.Equal(t, data.Title, newTodo.Title)
 	require.Equal(t, "very-high", newTodo.Priority)
 
@@ -76,8 +76,8 @@ func TestGetAllTodoServices(t *testing.T) {
 
 	t.Run("Get all todos without query activity_group_id", func(t *testing.T) {
 		// Get activity groups
-		activityGroupId := int64(0)
-		todos, err := service.GetAll(uint64(activityGroupId))
+		ActivityId := int64(0)
+		todos, err := service.GetAll(uint64(ActivityId))
 		helper.ErrLogPanic(err)
 
 		// Length todos must be greater than 0
@@ -86,7 +86,7 @@ func TestGetAllTodoServices(t *testing.T) {
 		for _, data := range todos {
 			require.NotEmpty(t, data.ID)
 			require.NotEmpty(t, data.Title)
-			require.NotEmpty(t, data.ActivityGroupID)
+			require.NotEmpty(t, data.ActivityID)
 
 			require.NotNil(t, data.IsActive)
 
@@ -100,8 +100,8 @@ func TestGetAllTodoServices(t *testing.T) {
 
 	t.Run("Get all todos with query activity_group_id", func(t *testing.T) {
 		// Get activity groups
-		activityGroupId := newTodos[0].ActivityGroupID
-		todos, err := service.GetAll(uint64(activityGroupId))
+		ActivityId := newTodos[0].ActivityID
+		todos, err := service.GetAll(uint64(ActivityId))
 		helper.ErrLogPanic(err)
 
 		// Length todos must be 1
@@ -110,7 +110,7 @@ func TestGetAllTodoServices(t *testing.T) {
 		for _, data := range todos {
 			require.Equal(t, newTodos[0].ID, data.ID)
 			require.Equal(t, newTodos[0].Title, data.Title)
-			require.Equal(t, newTodos[0].ActivityGroupID, data.ActivityGroupID)
+			require.Equal(t, newTodos[0].ActivityID, data.ActivityID)
 			require.Equal(t, newTodos[0].IsActive, data.IsActive)
 			require.Equal(t, newTodos[0].Priority, data.Priority)
 
@@ -136,7 +136,7 @@ func TestGetOneTodoServices(t *testing.T) {
 
 	require.Equal(t, newTodo.ID, todo.ID)
 	require.Equal(t, newTodo.Title, todo.Title)
-	require.Equal(t, newTodo.ActivityGroupID, todo.ActivityGroupID)
+	require.Equal(t, newTodo.ActivityID, todo.ActivityID)
 	require.Equal(t, newTodo.IsActive, todo.IsActive)
 	require.Equal(t, newTodo.Priority, todo.Priority)
 
@@ -163,7 +163,7 @@ func TestUpdateTodoService(t *testing.T) {
 		helper.ErrLogPanic(err)
 
 		require.Equal(t, newTodo.ID, updatedTodo.ID)
-		require.Equal(t, newTodo.ActivityGroupID, updatedTodo.ActivityGroupID)
+		require.Equal(t, newTodo.ActivityID, updatedTodo.ActivityID)
 		require.Equal(t, newTodo.CreatedAt, updatedTodo.CreatedAt)
 
 		require.NotEqual(t, newTodo.Title, updatedTodo.Title)
@@ -187,7 +187,7 @@ func TestUpdateTodoService(t *testing.T) {
 		helper.ErrLogPanic(err)
 
 		require.Equal(t, newTodo.ID, updatedTodo.ID)
-		require.Equal(t, newTodo.ActivityGroupID, updatedTodo.ActivityGroupID)
+		require.Equal(t, newTodo.ActivityID, updatedTodo.ActivityID)
 		require.Equal(t, newTodo.CreatedAt, updatedTodo.CreatedAt)
 		require.Equal(t, newTodo.IsActive, updatedTodo.IsActive)
 
@@ -209,7 +209,7 @@ func TestUpdateTodoService(t *testing.T) {
 		helper.ErrLogPanic(err)
 
 		require.Equal(t, newTodo.ID, updatedTodo.ID)
-		require.Equal(t, newTodo.ActivityGroupID, updatedTodo.ActivityGroupID)
+		require.Equal(t, newTodo.ActivityID, updatedTodo.ActivityID)
 		require.Equal(t, newTodo.CreatedAt, updatedTodo.CreatedAt)
 		require.Equal(t, newTodo.Title, updatedTodo.Title)
 

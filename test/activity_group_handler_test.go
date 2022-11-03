@@ -15,8 +15,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateResponse {
-	data := web.ActivityGroupRequest{
+func createRandomActivityHandler(t *testing.T) web.ActivityCreateResponse {
+	data := web.ActivityRequest{
 		Title: jabufaker.RandomString(20),
 		Email: jabufaker.RandomEmail(),
 	}
@@ -50,19 +50,19 @@ func createRandomActivityGroupHandler(t *testing.T) web.ActivityGroupCreateRespo
 	require.Equal(t, data.Title, contextData["title"])
 	require.Equal(t, data.Email, contextData["email"])
 
-	newActivityGroup := web.ActivityGroupCreateResponse{
+	newActivity := web.ActivityCreateResponse{
 		ID:    uint64(contextData["id"].(float64)),
 		Title: contextData["title"].(string),
 		Email: contextData["email"].(string),
 	}
 
-	return newActivityGroup
+	return newActivity
 }
 
-func TestActivityGroupCreateHandler(t *testing.T) {
+func TestActivityCreateHandler(t *testing.T) {
 	t.Parallel()
 	t.Run("Handler Create activity Group success", func(t *testing.T) {
-		createRandomActivityGroupHandler(t)
+		createRandomActivityHandler(t)
 	})
 
 	t.Run("Handler Create activity Group failed title blank", func(t *testing.T) {
@@ -89,14 +89,14 @@ func TestActivityGroupCreateHandler(t *testing.T) {
 	})
 }
 
-func TestGetAllActivityGroupHandler(t *testing.T) {
+func TestGetAllActivityHandler(t *testing.T) {
 	var mutex sync.Mutex
 	t.Parallel()
 	// Create some random data
 	for i := 0; i < 10; i++ {
 		go func() {
 			mutex.Lock()
-			createRandomActivityGroupHandler(t)
+			createRandomActivityHandler(t)
 			mutex.Unlock()
 		}()
 	}
@@ -135,12 +135,12 @@ func TestGetAllActivityGroupHandler(t *testing.T) {
 	}
 }
 
-func TestGetOneActivityGroup(t *testing.T) {
+func TestGetOneActivity(t *testing.T) {
 	t.Parallel()
-	newActivityGroup := createRandomActivityGroupHandler(t)
+	newActivity := createRandomActivityHandler(t)
 
 	t.Run("Success get one", func(t *testing.T) {
-		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		id := fmt.Sprintf("%d", newActivity.ID)
 		request := httptest.NewRequest(http.MethodGet, "http://localhost:3030/activity-groups/"+id, nil)
 		request.Header.Add("Content-Type", "application/json")
 
@@ -161,9 +161,9 @@ func TestGetOneActivityGroup(t *testing.T) {
 		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		require.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
-		require.Equal(t, newActivityGroup.Title, contextData["title"])
-		require.Equal(t, newActivityGroup.Email, contextData["email"])
+		require.Equal(t, newActivity.ID, uint64(contextData["id"].(float64)))
+		require.Equal(t, newActivity.Title, contextData["title"])
+		require.Equal(t, newActivity.Email, contextData["email"])
 
 		require.NotEmpty(t, contextData["created_at"])
 		require.NotEmpty(t, contextData["updated_at"])
@@ -193,19 +193,19 @@ func TestGetOneActivityGroup(t *testing.T) {
 	})
 }
 
-func TestUpdateActivityGroup(t *testing.T) {
+func TestUpdateActivity(t *testing.T) {
 	t.Parallel()
-	newActivityGroup := createRandomActivityGroupHandler(t)
+	newActivity := createRandomActivityHandler(t)
 
 	t.Run("Success updated activity group", func(t *testing.T) {
-		data := web.ActivityGroupUpdateRequest{
+		data := web.ActivityUpdateRequest{
 			Title: jabufaker.RandomString(20),
 		}
 
 		dataBody := fmt.Sprintf(`{"title": "%s"}`, data.Title)
 		requestBody := strings.NewReader(dataBody)
 
-		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		id := fmt.Sprintf("%d", newActivity.ID)
 		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/activity-groups/"+id, requestBody)
 		request.Header.Add("Content-Type", "application/json")
 
@@ -225,11 +225,11 @@ func TestUpdateActivityGroup(t *testing.T) {
 		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		require.Equal(t, newActivityGroup.ID, uint64(contextData["id"].(float64)))
-		require.Equal(t, newActivityGroup.Email, contextData["email"])
+		require.Equal(t, newActivity.ID, uint64(contextData["id"].(float64)))
+		require.Equal(t, newActivity.Email, contextData["email"])
 
-		require.NotEqual(t, newActivityGroup.UpdatedAt.String(), contextData["updated_at"])
-		require.NotEqual(t, newActivityGroup.Title, contextData["title"])
+		require.NotEqual(t, newActivity.UpdatedAt.String(), contextData["updated_at"])
+		require.NotEqual(t, newActivity.Title, contextData["title"])
 
 		require.NotEmpty(t, contextData["created_at"])
 
@@ -239,7 +239,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 		dataBody := fmt.Sprintf(`{"title": "%s"}`, "")
 		requestBody := strings.NewReader(dataBody)
 
-		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		id := fmt.Sprintf("%d", newActivity.ID)
 		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/activity-groups/"+id, requestBody)
 		request.Header.Add("Content-Type", "application/json")
 
@@ -260,7 +260,7 @@ func TestUpdateActivityGroup(t *testing.T) {
 	})
 
 	t.Run("Id not found", func(t *testing.T) {
-		data := web.ActivityGroupUpdateRequest{
+		data := web.ActivityUpdateRequest{
 			Title: jabufaker.RandomString(20),
 		}
 
@@ -289,12 +289,12 @@ func TestUpdateActivityGroup(t *testing.T) {
 	})
 }
 
-func TestDeleteActivityGroup(t *testing.T) {
+func TestDeleteActivity(t *testing.T) {
 	t.Parallel()
-	newActivityGroup := createRandomActivityGroupHandler(t)
+	newActivity := createRandomActivityHandler(t)
 
 	t.Run("Deleted success", func(t *testing.T) {
-		id := fmt.Sprintf("%d", newActivityGroup.ID)
+		id := fmt.Sprintf("%d", newActivity.ID)
 		request := httptest.NewRequest(http.MethodDelete, "http://localhost:3030/activity-groups/"+id, nil)
 		request.Header.Add("Content-Type", "application/json")
 
