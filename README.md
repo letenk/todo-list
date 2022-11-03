@@ -44,6 +44,7 @@ go run main.go
 
 ## Run Test
 Here can use `Makefile` for shortcut syntax to run each test.
+
 **Note: If not export environment variable. Please export first!**
 ### Run All Test 
 - Run with `Makefile`
