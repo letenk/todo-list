@@ -46,7 +46,6 @@ func createRandomTodoHandler(t *testing.T) web.TodoResponse {
 	require.NotEmpty(t, responseBody["data"])
 
 	var contextData = responseBody["data"].(map[string]interface{})
-	fmt.Println(contextData["priority"])
 	require.NotEmpty(t, contextData["id"])
 	require.NotEmpty(t, contextData["created_at"])
 	require.NotEmpty(t, contextData["updated_at"])
@@ -354,7 +353,6 @@ func TestUpdateTodo(t *testing.T) {
 		require.NotEmpty(t, responseBody["data"])
 
 		var contextData = responseBody["data"].(map[string]interface{})
-		fmt.Println(contextData)
 		require.Equal(t, newTodo.ID, uint64(contextData["id"].(float64)))
 		require.Equal(t, newTodo.ActivityID, uint64(contextData["activity_group_id"].(float64)))
 		require.Equal(t, newTodo.Priority, contextData["priority"])
@@ -384,7 +382,6 @@ func TestUpdateTodo(t *testing.T) {
 
 		dataBody := fmt.Sprintf(`{"is_active": %t}`, data.IsActive)
 		requestBody := strings.NewReader(dataBody)
-		fmt.Println(dataBody)
 		id := fmt.Sprintf("%d", newTodo.ID)
 		request := httptest.NewRequest(http.MethodPatch, "http://localhost:3030/todo-items/"+id, requestBody)
 		request.Header.Add("Content-Type", "application/json")
